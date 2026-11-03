@@ -192,12 +192,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <JsonLd data={postJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-10 md:py-16 px-6">
+      <main className="flex-1 py-10 md:py-16 px-4 sm:px-6">
         <article className="mx-auto max-w-3xl">
           {/* Breadcrumbs & Navigation */}
           <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-8">
             <Link
-              href="/blog"
+              href="/guides"
               className="inline-flex items-center gap-1.5 hover:text-teal-600 dark:hover:text-teal-400 font-medium transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
@@ -207,7 +207,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="flex items-center gap-1.5 text-[11px]">
               <Link href="/" className="hover:underline">Home</Link>
               <span>/</span>
-              <Link href="/blog" className="hover:underline">Blog</Link>
+              <Link href="/guides" className="hover:underline">Guides</Link>
             </div>
           </div>
 

@@ -99,7 +99,7 @@ export function ReleaseAnimation({ textToRelease, onComplete }: ReleaseAnimation
   }, []);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-teal-500/30 bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 p-8 text-center text-white shadow-2xl">
+    <div className="relative overflow-hidden rounded-3xl border border-teal-500/30 bg-gradient-to-b from-zinc-900 via-zinc-950 to-zinc-900 p-5 sm:p-8 text-center text-white shadow-2xl">
       {/* Particle Canvas */}
       <canvas
         ref={canvasRef}
@@ -108,26 +108,26 @@ export function ReleaseAnimation({ textToRelease, onComplete }: ReleaseAnimation
 
       <div className="relative z-10 flex flex-col items-center">
         {/* Floating Icon */}
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-500/20 text-teal-300 ring-1 ring-teal-500/40 animate-pulse">
+        <div className="mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-teal-500/20 text-teal-300 ring-1 ring-teal-500/40 animate-pulse">
           {phase === "released" ? (
-            <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+            <CheckCircle2 className="h-7 w-7 sm:h-8 sm:w-8 text-emerald-400" />
           ) : (
-            <Wind className="h-8 w-8 text-teal-300 animate-spin-slow" />
+            <Wind className="h-7 w-7 sm:h-8 sm:w-8 text-teal-300 animate-spin-slow" />
           )}
         </div>
 
-        <h3 className="text-2xl font-bold tracking-tight text-white">
+        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
           {phase === "released" ? "Ritual Complete: Released" : "Dissolving Mental Clutter..."}
         </h3>
 
         {/* Guided Breathing Exhalation Cue */}
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-950/60 px-5 py-2 text-sm font-medium text-teal-200 backdrop-blur-md">
-          <Sparkles className="h-4 w-4 text-teal-400 animate-pulse" />
-          <span>{breathPrompt}</span>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-950/60 px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium text-teal-200 backdrop-blur-md max-w-full">
+          <Sparkles className="h-4 w-4 shrink-0 text-teal-400 animate-pulse" />
+          <span className="truncate">{breathPrompt}</span>
         </div>
 
         {/* Fading text preview */}
-        <div className="mt-6 max-h-28 max-w-lg overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 text-xs italic text-zinc-400 transition-opacity duration-1000 select-none">
+        <div className="mt-6 max-h-28 max-w-lg overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 text-[11px] sm:text-xs italic text-zinc-400 transition-opacity duration-1000 select-none">
           <p className={phase === "released" ? "line-through opacity-20" : "opacity-60 blur-[0.6px]"}>
             &ldquo;{textToRelease.slice(0, 240)}...&rdquo;
           </p>
@@ -137,7 +137,7 @@ export function ReleaseAnimation({ textToRelease, onComplete }: ReleaseAnimation
         {phase === "released" && (
           <button
             onClick={onComplete}
-            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-teal-500/20 transition-all hover:scale-105 hover:from-teal-500 hover:to-emerald-500"
+            className="mt-8 inline-flex w-full sm:w-auto min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-lg shadow-teal-500/20 transition-all hover:scale-105 hover:from-teal-500 hover:to-emerald-500"
           >
             <CheckCircle2 className="h-4 w-4" />
             <span>Check In With How You Feel Now</span>

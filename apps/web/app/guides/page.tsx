@@ -69,7 +69,7 @@ export default async function BlogIndexPage() {
       <main className="flex-1">
         {/* Posts Grid */}
         <section className="py-12 md:py-16">
-          <div className="mx-auto max-w-6xl px-6">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
             {posts.length === 0 ? (
               <div className="rounded-3xl border border-zinc-200/80 bg-white p-12 text-center shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900 max-w-xl mx-auto space-y-4">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-50 text-teal-600 dark:bg-teal-950/60 dark:text-teal-400">

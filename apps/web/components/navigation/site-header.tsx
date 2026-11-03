@@ -22,17 +22,17 @@ export function SiteHeader() {
       />
 
       <header className="sticky top-0 z-40 border-b border-zinc-200/80 bg-white/80 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
-          {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform">
-              <Heart className="h-5 w-5" />
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3 sm:py-3.5">
+          {/* Logo & Brand (Mobile shows just the logo icon; tablet/desktop shows logo + text) */}
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group" aria-label="Rewire Home">
+            <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform">
+              <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
+            <div className="hidden sm:flex flex-col">
+              <span className="text-base sm:text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
                 Rewire
               </span>
-              <span className="text-[10px] font-semibold text-teal-600 dark:text-teal-400 tracking-wide uppercase">
+              <span className="text-[9px] sm:text-[10px] font-semibold text-teal-600 dark:text-teal-400 tracking-wide uppercase">
                 Mental Health Companion
               </span>
             </div>
@@ -80,16 +80,15 @@ export function SiteHeader() {
 
           {/* Action CTAs */}
           <div className="flex items-center gap-2.5">
-            {/* Quick 24/7 Crisis Access */}
+            {/* Quick 24/7 Crisis Access (Hidden on mobile header to keep header minimal; available in mobile menu & on desktop) */}
             <button
               onClick={() => setIsCrisisModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 transition-colors"
               title={`Immediate crisis help (${regionData.countryName})`}
             >
               <PhoneCall className="h-3.5 w-3.5" />
               <span>{regionData.flag}</span>
-              <span className="hidden sm:inline">Crisis ({regionData.primaryNumber})</span>
-              <span className="sm:hidden">{regionData.primaryNumber}</span>
+              <span>Crisis ({regionData.primaryNumber})</span>
             </button>
 
             {session?.user ? (
@@ -127,11 +126,11 @@ export function SiteHeader() {
 
         {/* Mobile dropdown menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 px-6 py-4 space-y-3">
+          <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 px-4 sm:px-6 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
             <Link
-              href="/blog"
+              href="/guides"
               onClick={() => setMobileMenuOpen(false)}
-              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
+              className="block text-sm font-medium text-teal-700 dark:text-teal-300 hover:text-teal-600"
             >
               Mental Health Guides
             </Link>
@@ -154,7 +153,7 @@ export function SiteHeader() {
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
             >
-              Clinical & Medical Disclaimer
+              Clinical &amp; Medical Disclaimer
             </Link>
             <Link
               href="/crisis-resources"
@@ -175,15 +174,34 @@ export function SiteHeader() {
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
             >
-              Legal & Merchant Info
+              Legal &amp; Merchant Info
             </Link>
             <Link
               href="/contact"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-teal-600 dark:text-teal-400 font-semibold"
             >
-              Contact Us & Support
+              Contact Us &amp; Support
             </Link>
+
+            {!session?.user && (
+              <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex gap-2">
+                <Link
+                  href="/sign-in"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 rounded-xl border border-zinc-200 bg-white py-2.5 text-center text-xs font-semibold text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/sign-up"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 rounded-xl bg-teal-600 py-2.5 text-center text-xs font-semibold text-white shadow-sm hover:bg-teal-700"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </header>

@@ -317,11 +317,11 @@ export function DynamicInsights() {
                   key={trig.trigger}
                   className="flex items-center justify-between rounded-xl border border-zinc-100 bg-zinc-50/60 p-3.5 dark:border-zinc-800/60 dark:bg-zinc-800/40"
                 >
-                  <div>
-                    <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                  <div className="min-w-0 flex-1 pr-2">
+                    <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate block">
                       {trig.trigger}
                     </span>
-                    <div className="mt-0.5 flex items-center gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
+                    <div className="mt-0.5 flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] text-zinc-500 dark:text-zinc-400">
                       <span>{trig.occurrences} sessions</span>
                       <span>•</span>
                       <span>Initial Distress: {trig.avgDistressLevel}/10</span>
