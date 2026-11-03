@@ -16,14 +16,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Us & Customer Support — Rewire",
+  title: "Contact Us & Support",
   description:
     "Get in touch with the Rewire team. Official contact information, support helpline, email, and merchant details for Rewire operated by Aadarsh Kumar.",
   alternates: {
     canonical: "/contact",
   },
   openGraph: {
-    title: "Contact Us & Support — Rewire",
+    title: "Contact Us & Support | HeyRewire",
     description:
       "Reach out to Rewire for technical support, billing inquiries, or legal clarifications.",
   },

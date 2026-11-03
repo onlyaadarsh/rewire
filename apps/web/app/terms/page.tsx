@@ -6,14 +6,14 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { Scale, CheckCircle2, AlertOctagon, HelpCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Platform Usage Guidelines",
+  title: "Terms of Service",
   description:
     "Review the terms and conditions for using Rewire. Understand account eligibility, non-emergency conditions, intellectual property, and user responsibilities.",
   alternates: {
     canonical: "/terms",
   },
   openGraph: {
-    title: "Terms of Service — Rewire",
+    title: "Terms of Service | HeyRewire",
     description: "Usage agreement and guidelines for the Rewire mental health companion platform.",
   },
 };

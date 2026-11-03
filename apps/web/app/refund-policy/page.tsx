@@ -15,14 +15,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Cancellation & Refund Policy — Rewire",
+  title: "Cancellation & Refund Policy",
   description:
     "Review the Cancellation & Refund Policy for Rewire. Details on subscription cancellation, refund eligibility, processing times, and payment dispute guidelines.",
   alternates: {
     canonical: "/refund-policy",
   },
   openGraph: {
-    title: "Cancellation & Refund Policy — Rewire",
+    title: "Cancellation & Refund Policy | HeyRewire",
     description:
       "Clear, transparent guidelines regarding subscription cancellations and refund requests for Rewire.",
   },

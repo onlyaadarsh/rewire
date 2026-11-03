@@ -18,14 +18,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Legal Information & Merchant Details — Rewire",
+  title: "Legal & Merchant Information",
   description:
     "Official legal information, registered merchant entity details, contact credentials, and compliance disclosures for Rewire.",
   alternates: {
     canonical: "/legal",
   },
   openGraph: {
-    title: "Legal Information & Merchant Details — Rewire",
+    title: "Legal & Merchant Information | HeyRewire",
     description:
       "Registered merchant information, compliance disclosures, and official contact information for Rewire.",
   },

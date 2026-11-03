@@ -13,14 +13,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Clinical & Medical Disclaimer — Important Safety Information",
+  title: "Clinical & Medical Disclaimer",
   description:
     "Read Rewire's clinical and medical disclaimer. Rewire is an artificial intelligence wellness companion, not a licensed healthcare provider, medical doctor, or emergency response service.",
   alternates: {
     canonical: "/disclaimer",
   },
   openGraph: {
-    title: "Clinical & Medical Disclaimer — Rewire",
+    title: "Clinical & Medical Disclaimer | HeyRewire",
     description:
       "Important medical, psychiatric, and emergency safety guidelines regarding the use of Rewire.",
   },

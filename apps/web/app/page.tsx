@@ -145,14 +145,14 @@ export default function Home() {
             </div>
 
             <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-6xl md:text-7xl leading-tight">
-              A Safe, Empathetic Space <br className="hidden sm:inline" />
+              Break Overthinking Loops <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-teal-600 via-emerald-600 to-cyan-600 bg-clip-text text-transparent">
-                For Your Mind & Heart
+                With an Empathetic Companion
               </span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base text-zinc-600 dark:text-zinc-300 sm:text-lg leading-relaxed">
-              Rewire provides active reflection, grounding exercises, and cognitive reframing whenever you feel overwhelmed, anxious, or just need to talk.
+              HeyRewire combines private brain dump journaling, CBT-grounded thought reframing, and guided box breathing to help you calm anxiety, quiet racing thoughts, and restore mental clarity.
             </p>
 
             {/* Primary Action Buttons */}
@@ -196,7 +196,7 @@ export default function Home() {
         </section>
 
         {/* Daily Mood Barometer */}
-        <section className="border-y border-zinc-200/80 bg-white/50 py-10 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-900/40">
+        <section id="checkins" className="border-y border-zinc-200/80 bg-white/50 py-10 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-900/40">
           <div className="mx-auto max-w-5xl px-6">
             <div className="text-center mb-6">
               <span className="text-xs font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">
@@ -322,7 +322,7 @@ export default function Home() {
         </section>
 
         {/* Interactive Calming Breathing Tool Spotlight */}
-        <section className="py-16 md:py-24">
+        <section id="breathing" className="py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>

@@ -14,14 +14,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Confidential Mental Health Data Standards",
+  title: "Privacy Policy",
   description:
     "Review Rewire's privacy policy. We adhere to strict zero-data-selling principles, end-to-end transport encryption, and user-governed mental health data retention.",
   alternates: {
     canonical: "/privacy",
   },
   openGraph: {
-    title: "Privacy Policy — Rewire Mental Health",
+    title: "Privacy Policy | HeyRewire",
     description:
       "Your vulnerability deserves protection. How Rewire securely protects and isolates your personal thoughts and journal entries.",
   },

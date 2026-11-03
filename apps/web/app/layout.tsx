@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
     default: "HeyRewire — Break Overthinking Spirals, Relieve Stress & Track Mood",
-    template: "%s | HeyRewire Mental Health Companion",
+    template: "%s | HeyRewire",
   },
   description:
     "Overcome overthinking, navigate depression, and calm stress with HeyRewire. Grounded in CBT techniques, featuring an empathetic AI chat companion, private brain dump journaling, and longitudinal mood analytics.",
@@ -32,11 +32,11 @@ export const metadata: Metadata = {
     "anxiety grounding exercises",
     "CBT thought reframing",
     "brain dump journal",
+    "cognitive offloading",
     "depression mood tracker",
     "AI mental health companion",
     "box breathing technique",
     "stress relief exercises",
-    "tele-manas online self-care",
     "emotional regulation tool",
   ],
   authors: [{ name: "HeyRewire Mental Health Team", url: APP_URL }],
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: "./",
+    canonical: "/",
   },
   icons: {
     icon: [
@@ -68,10 +68,11 @@ export const metadata: Metadata = {
       "Grounded in CBT techniques to break rumination loops, calm racing thoughts, and track emotional wellness over time.",
     images: [
       {
-        url: "/web-app-manifest-512x512.png",
-        width: 512,
-        height: 512,
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
         alt: "HeyRewire - Mental Health Companion",
+        type: "image/png",
       },
     ],
   },
@@ -80,7 +81,7 @@ export const metadata: Metadata = {
     title: "HeyRewire — Break Overthinking Spirals & Calm Stress",
     description:
       "Interactive mental health companion with CBT-grounded journaling, guided breathing, and mood analytics.",
-    images: ["/web-app-manifest-512x512.png"],
+    images: ["/twitter-image"],
   },
   robots: {
     index: true,
@@ -123,24 +124,58 @@ const globalStructuredData = {
       },
     },
     {
-      "@type": "MedicalOrganization",
+      "@type": "Organization",
       "@id": `${APP_URL}/#org`,
       "name": "HeyRewire Mental Wellness",
       "url": APP_URL,
+      "logo": `${APP_URL}/icon.png`,
       "description":
         "Provider of accessible, evidence-informed digital tools for cognitive reframing, emotional regulation, and stress management.",
       "contactPoint": [
         {
           "@type": "ContactPoint",
-          "telephone": "14416",
-          "contactType": "Emergency Tele-MANAS Crisis Support (India)",
+          "telephone": "+91 96315 26557",
+          "email": "aadarshsingh121@gmail.com",
+          "contactType": "Customer Support & Inquiries",
           "availableLanguage": ["English", "Hindi"],
         },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${APP_URL}/#faq`,
+      "mainEntity": [
         {
-          "@type": "ContactPoint",
-          "telephone": "988",
-          "contactType": "Emergency Crisis Lifeline Support (US & Canada)",
-          "availableLanguage": ["English", "Spanish"],
+          "@type": "Question",
+          "name": "What is HeyRewire?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "HeyRewire is an evidence-informed AI mental health companion designed to help break overthinking loops, regulate nervous system stress, and reframe irrational worries through Cognitive Behavioral Therapy (CBT) techniques and brain dump journaling.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "How does Cognitive Offloading (Brain Dump) work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "When your mind is overwhelmed, working memory gets strained. Brain dumping allows you to externalize racing thoughts onto a private digital canvas, isolate cognitive distortions (such as catastrophizing or all-or-nothing thinking), and convert emotional heaviness into actionable micro-steps.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "Is HeyRewire a replacement for therapy or a licensed doctor?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. HeyRewire is a self-care wellness companion and cognitive reframing habit tool. It does not provide medical diagnoses, psychiatric prescriptions, or emergency intervention. If you are experiencing acute crisis or thoughts of self-harm, please dial 14416 (India), 988 (US & Canada), 111 (UK), or your local emergency hotline.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": "Is my journal and mental health data private?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. HeyRewire adheres to a zero data selling principle with encrypted sessions and database isolation. Your private reflections and brain dumps remain strictly yours.",
+          },
         },
       ],
     },

@@ -15,14 +15,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Shipping & Delivery Policy — Service Fulfillment — Rewire",
+  title: "Shipping & Delivery Policy",
   description:
     "Review Rewire's Shipping and Delivery Policy. Rewire provides digital software-as-a-service (SaaS) products with instant electronic delivery and activation.",
   alternates: {
     canonical: "/shipping-policy",
   },
   openGraph: {
-    title: "Shipping & Delivery Policy — Rewire",
+    title: "Shipping & Delivery Policy | HeyRewire",
     description:
       "Details on electronic service delivery, account activation, and digital fulfillment for Rewire.",
   },

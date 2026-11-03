@@ -10,14 +10,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "24/7 Mental Health Crisis Resources & Support Hotlines (India, US, UK & Worldwide)",
+  title: "24/7 Crisis Resources & Helplines (US, India, UK)",
   description:
     "Free, confidential, 24/7 mental health crisis helplines including India's Tele-MANAS (14416), Vandrevala Foundation, US 988, UK NHS 111, and worldwide emergency services.",
   alternates: {
     canonical: "/crisis-resources",
   },
   openGraph: {
-    title: "Crisis Support Directory — HeyRewire",
+    title: "24/7 Crisis Support Directory | HeyRewire",
     description: "Immediate 24/7 support hotlines and crisis intervention resources in India, US, UK, and globally.",
   },
 };
