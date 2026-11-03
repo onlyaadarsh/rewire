@@ -127,7 +127,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     year: "numeric",
   });
 
-  const postUrl = `${APP_URL}/blog/${post.slug}`;
+  const postUrl = `${APP_URL}/guides/${post.slug}`;
 
   // Structured Data: BlogPosting & BreadcrumbList
   const postJsonLd = {
