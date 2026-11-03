@@ -1,17 +1,22 @@
 import { MetadataRoute } from "next";
+import { getWordPressPosts } from "@/lib/wordpress";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://heyrewire.com";
-// Using a stable deployment date instead of dynamic new Date() on every request
-// to prevent search engine crawlers from ignoring lastModified signals.
 const LAST_MODIFIED = new Date("2026-10-01T00:00:00.000Z");
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const routes: MetadataRoute.Sitemap = [
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: `${BASE_URL}`,
       lastModified: LAST_MODIFIED,
       changeFrequency: "weekly",
       priority: 1.0,
+    },
+    {
+      url: `${BASE_URL}/guides`,
+      lastModified: LAST_MODIFIED,
+      changeFrequency: "daily",
+      priority: 0.9,
     },
     {
       url: `${BASE_URL}/offload`,
@@ -75,5 +80,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  return routes;
+  // Dynamically include all WordPress blog posts in sitemap
+  try {
+    const posts = await getWordPressPosts({ perPage: 100 });
+    const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
+      url: `${BASE_URL}/blog/${post.slug}`,
+      lastModified: new Date(post.modified || post.date),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+    return [...staticRoutes, ...postRoutes];
+  } catch (error) {
+    console.warn("[sitemap] Failed to fetch WordPress posts for sitemap:", error);
+    return staticRoutes;
+  }
 }

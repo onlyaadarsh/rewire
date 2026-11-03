@@ -67,6 +67,12 @@ export default function Home() {
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-zinc-600 dark:text-zinc-400">
             <Link
+              href="/guides"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors font-medium text-teal-700 dark:text-teal-300"
+            >
+              Guides
+            </Link>
+            <Link
               href="/about"
               className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
             >

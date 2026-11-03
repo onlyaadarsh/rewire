@@ -41,6 +41,12 @@ export function SiteHeader() {
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-zinc-600 dark:text-zinc-400">
             <Link
+              href="/guides"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+            >
+              Guides
+            </Link>
+            <Link
               href="/about"
               className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
             >
@@ -122,6 +128,13 @@ export function SiteHeader() {
         {/* Mobile dropdown menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 px-6 py-4 space-y-3">
+            <Link
+              href="/blog"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
+            >
+              Mental Health Guides
+            </Link>
             <Link
               href="/about"
               onClick={() => setMobileMenuOpen(false)}

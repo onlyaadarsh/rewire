@@ -75,6 +75,14 @@ export function SiteFooter() {
             <ul className="space-y-2 text-xs">
               <li>
                 <Link
+                  href="/guides"
+                  className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors font-medium text-teal-700 dark:text-teal-300"
+                >
+                  Mental Health Guides
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/about"
                   className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
                 >
