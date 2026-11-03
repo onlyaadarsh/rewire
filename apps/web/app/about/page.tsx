@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Rewire — Purpose, Clinical Methodology & AI Safety",
+  title: "About — Purpose, CBT Methodology & Safety",
   description:
     "Learn about Rewire's mission to help people overcome overthinking, depression, and chronic stress through CBT-informed journaling, AI companionship, and privacy-first architecture.",
   alternates: {
@@ -37,7 +37,7 @@ const aboutJsonLd = {
     "Information on the purpose, therapeutic methodology, and technical safety architecture of HeyRewire.",
   url: "https://heyrewire.com/about",
   mainEntity: {
-    "@type": "MedicalOrganization",
+    "@type": "Organization",
     name: "HeyRewire Mental Wellness",
     description:
       "A mental health technology platform offering structured emotional reflection, CBT thought reframing, and stress self-regulation.",
@@ -57,7 +57,7 @@ export default function AboutPage() {
       <JsonLd data={aboutJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-12 md:py-20 px-6">
+      <main className="flex-1 py-10 md:py-20 px-4 sm:px-6">
         <article className="mx-auto max-w-4xl space-y-16">
           {/* Header Section */}
           <header className="space-y-4 text-center">

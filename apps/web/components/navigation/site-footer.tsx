@@ -4,7 +4,7 @@ import { Heart, ShieldCheck, LifeBuoy, PhoneCall, Building2, Mail, Phone, Scale 
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-zinc-200/80 bg-white/70 py-12 px-6 text-zinc-600 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/70 dark:text-zinc-400">
+    <footer className="border-t border-zinc-200/80 bg-white/70 py-12 px-4 sm:px-6 text-zinc-600 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/70 dark:text-zinc-400">
       <div className="mx-auto max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-zinc-200 dark:border-zinc-800">
           {/* Brand & Purpose */}
@@ -73,6 +73,14 @@ export function SiteFooter() {
               About & Support
             </h4>
             <ul className="space-y-2 text-xs">
+              <li>
+                <Link
+                  href="/guides"
+                  className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors font-medium text-teal-700 dark:text-teal-300"
+                >
+                  Mental Health Guides
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/about"

@@ -13,14 +13,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Clinical & Medical Disclaimer — Important Safety Information",
+  title: "Clinical & Medical Disclaimer",
   description:
     "Read Rewire's clinical and medical disclaimer. Rewire is an artificial intelligence wellness companion, not a licensed healthcare provider, medical doctor, or emergency response service.",
   alternates: {
     canonical: "/disclaimer",
   },
   openGraph: {
-    title: "Clinical & Medical Disclaimer — Rewire",
+    title: "Clinical & Medical Disclaimer | HeyRewire",
     description:
       "Important medical, psychiatric, and emergency safety guidelines regarding the use of Rewire.",
   },
@@ -46,7 +46,7 @@ export default function DisclaimerPage() {
       <JsonLd data={disclaimerJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-12 md:py-20 px-6">
+      <main className="flex-1 py-10 md:py-20 px-4 sm:px-6">
         <article className="mx-auto max-w-4xl space-y-12">
           {/* Header */}
           <header className="space-y-4 text-center">

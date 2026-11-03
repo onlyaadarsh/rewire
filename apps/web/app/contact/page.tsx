@@ -16,14 +16,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Us & Customer Support — Rewire",
+  title: "Contact Us & Support",
   description:
     "Get in touch with the Rewire team. Official contact information, support helpline, email, and merchant details for Rewire operated by Aadarsh Kumar.",
   alternates: {
     canonical: "/contact",
   },
   openGraph: {
-    title: "Contact Us & Support — Rewire",
+    title: "Contact Us & Support | HeyRewire",
     description:
       "Reach out to Rewire for technical support, billing inquiries, or legal clarifications.",
   },
@@ -51,7 +51,7 @@ export default function ContactPage() {
       <JsonLd data={contactJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-12 md:py-20 px-6">
+      <main className="flex-1 py-10 md:py-20 px-4 sm:px-6">
         <article className="mx-auto max-w-4xl space-y-12">
           {/* Header */}
           <header className="space-y-4 text-center">

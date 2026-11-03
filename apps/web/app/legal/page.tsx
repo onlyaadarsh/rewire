@@ -18,14 +18,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Legal Information & Merchant Details — Rewire",
+  title: "Legal & Merchant Information",
   description:
     "Official legal information, registered merchant entity details, contact credentials, and compliance disclosures for Rewire.",
   alternates: {
     canonical: "/legal",
   },
   openGraph: {
-    title: "Legal Information & Merchant Details — Rewire",
+    title: "Legal & Merchant Information | HeyRewire",
     description:
       "Registered merchant information, compliance disclosures, and official contact information for Rewire.",
   },
@@ -52,7 +52,7 @@ export default function LegalInfoPage() {
       <JsonLd data={legalJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-12 md:py-20 px-6">
+      <main className="flex-1 py-10 md:py-20 px-4 sm:px-6">
         <article className="mx-auto max-w-4xl space-y-12">
           {/* Header */}
           <header className="space-y-4 text-center">

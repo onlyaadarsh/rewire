@@ -14,14 +14,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Confidential Mental Health Data Standards",
+  title: "Privacy Policy",
   description:
     "Review Rewire's privacy policy. We adhere to strict zero-data-selling principles, end-to-end transport encryption, and user-governed mental health data retention.",
   alternates: {
     canonical: "/privacy",
   },
   openGraph: {
-    title: "Privacy Policy — Rewire Mental Health",
+    title: "Privacy Policy | HeyRewire",
     description:
       "Your vulnerability deserves protection. How Rewire securely protects and isolates your personal thoughts and journal entries.",
   },
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
       <JsonLd data={privacyJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-12 md:py-20 px-6">
+      <main className="flex-1 py-10 md:py-20 px-4 sm:px-6">
         <article className="mx-auto max-w-4xl space-y-12">
           {/* Header */}
           <header className="space-y-4 text-center">

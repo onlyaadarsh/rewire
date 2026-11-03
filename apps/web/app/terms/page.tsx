@@ -6,14 +6,14 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { Scale, CheckCircle2, AlertOctagon, HelpCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Platform Usage Guidelines",
+  title: "Terms of Service",
   description:
     "Review the terms and conditions for using Rewire. Understand account eligibility, non-emergency conditions, intellectual property, and user responsibilities.",
   alternates: {
     canonical: "/terms",
   },
   openGraph: {
-    title: "Terms of Service — Rewire",
+    title: "Terms of Service | HeyRewire",
     description: "Usage agreement and guidelines for the Rewire mental health companion platform.",
   },
 };
@@ -31,7 +31,7 @@ export default function TermsPage() {
       <JsonLd data={termsJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-12 md:py-20 px-6">
+      <main className="flex-1 py-10 md:py-20 px-4 sm:px-6">
         <article className="mx-auto max-w-4xl space-y-12">
           {/* Header */}
           <header className="space-y-4 text-center">

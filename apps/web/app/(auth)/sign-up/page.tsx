@@ -4,8 +4,12 @@ import { SignUpCard } from "@/components/auth/sign-up-card";
 import { Loader2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Create an Account - Rewire",
-  description: "Create a new account on Rewire",
+  title: "Create Account",
+  description: "Create your confidential Rewire account to begin brain dumping and CBT reframing.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function SignUpPage() {
