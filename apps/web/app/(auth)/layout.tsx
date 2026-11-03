@@ -15,14 +15,7 @@ export default function AuthLayout({
       </div>
 
       {/* Header */}
-      <header className="relative z-10 w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-teal-600 dark:text-zinc-400 dark:hover:text-teal-400 transition-colors group"
-        >
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          <span>Back to home</span>
-        </Link>
+      <header className="relative z-10 w-full max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link
           href="/"
           className="inline-flex items-center gap-2.5 group"
@@ -37,7 +30,7 @@ export default function AuthLayout({
       </header>
 
       {/* Content */}
-      <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-8">
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-4 sm:py-8">
         {children}
       </main>
 

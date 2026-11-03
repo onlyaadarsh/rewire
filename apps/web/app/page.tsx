@@ -90,25 +90,15 @@ export default function Home() {
                     <span>Continue Your Conversation</span>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
-                  <div className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
-                    <CheckCircle2 className="h-4 w-4 text-teal-600 dark:text-teal-400" />
-                    <span>Welcome back, {session.user.name || session.user.email}</span>
-                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
                   <Link
-                    href="/sign-up"
+                    href="/sign-in"
                     className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 sm:px-7 font-semibold text-white shadow-lg shadow-teal-500/25 transition-all hover:from-teal-500 hover:to-emerald-500 hover:shadow-teal-500/35"
                   >
                     <span>Begin Free Confidential Reflection</span>
                     <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href="/sign-in"
-                    className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border border-zinc-300 bg-white px-6 font-semibold text-zinc-800 shadow-sm transition-all hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                  >
-                    <span>Sign In</span>
                   </Link>
                 </div>
               )}
