@@ -32,14 +32,26 @@ export function SiteHeader() {
               <span className="text-base sm:text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
                 Rewire
               </span>
-              <span className="text-[9px] sm:text-[10px] font-semibold text-teal-600 dark:text-teal-400 tracking-wide uppercase">
+              <span className="text-[10px] sm:text-[10px] font-semibold text-teal-600 dark:text-teal-400 tracking-wide">
                 Mental Health Companion
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          <nav className="hidden md:flex items-center gap-5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+            <Link
+              href="/tools/box-breathing"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+            >
+              Box Breathing
+            </Link>
+            <Link
+              href="/tools/thought-reframer"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+            >
+              CBT Reframer
+            </Link>
             <Link
               href="/guides"
               className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
@@ -47,35 +59,35 @@ export function SiteHeader() {
               Guides
             </Link>
             <Link
-              href="/about"
-              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
-            >
-              About
-            </Link>
-            <Link
               href="/offload"
               className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
             >
               Brain Dump
             </Link>
-            <Link
+            {/* <Link
+              href="/about"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+            >
+              About
+            </Link> */}
+            {/* <Link
               href="/disclaimer"
               className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
             >
               Clinical Disclaimer
-            </Link>
+            </Link> */}
             <Link
               href="/crisis-resources"
               className="hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
             >
               Crisis Directory
             </Link>
-            <Link
+            {/* <Link
               href="/contact"
               className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
             >
               Contact
-            </Link>
+            </Link> */}
           </nav>
 
           {/* Action CTAs */}
@@ -99,7 +111,7 @@ export function SiteHeader() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/offload"
-                  className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 hover:bg-teal-100 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300 transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 hover:bg-teal-700/50 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300 transition-colors"
                 >
                   <PenTool className="h-3.5 w-3.5" />
                   <span>Try Brain Dump</span>
@@ -128,9 +140,23 @@ export function SiteHeader() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 px-4 sm:px-6 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
             <Link
-              href="/guides"
+              href="/tools/box-breathing"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-teal-700 dark:text-teal-300 hover:text-teal-600"
+            >
+              Box Breathing Online
+            </Link>
+            <Link
+              href="/tools/thought-reframer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-teal-700 dark:text-teal-300 hover:text-teal-600"
+            >
+              CBT Thought Reframer
+            </Link>
+            <Link
+              href="/guides"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
             >
               Mental Health Guides
             </Link>
@@ -153,15 +179,15 @@ export function SiteHeader() {
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
             >
-              Clinical &amp; Medical Disclaimer
+              Clinical Medical Disclaimer
             </Link>
-            <Link
+            {/* <Link
               href="/crisis-resources"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-rose-600 dark:text-rose-400"
             >
               Crisis Directory (988)
-            </Link>
+            </Link> */}
             <Link
               href="/privacy"
               onClick={() => setMobileMenuOpen(false)}

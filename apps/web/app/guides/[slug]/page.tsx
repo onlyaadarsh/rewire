@@ -78,13 +78,13 @@ export async function generateMetadata({
     title: cleanTitle,
     description: cleanExcerpt,
     alternates: {
-      canonical: `/blog/${post.slug}`,
+      canonical: `/guides/${post.slug}`,
     },
     openGraph: {
       type: "article",
       title: cleanTitle,
       description: cleanExcerpt,
-      url: `${APP_URL}/blog/${post.slug}`,
+      url: `${APP_URL}/guides/${post.slug}`,
       siteName: "HeyRewire",
       publishedTime: post.date,
       modifiedTime: post.modified,
@@ -173,8 +173,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           {
             "@type": "ListItem",
             position: 2,
-            name: "Blog",
-            item: `${APP_URL}/blog`,
+            name: "Guides",
+            item: `${APP_URL}/guides`,
           },
           {
             "@type": "ListItem",

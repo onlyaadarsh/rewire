@@ -50,10 +50,18 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link
-                  href="/#breathing"
+                  href="/tools/box-breathing"
                   className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
                 >
-                  Guided Box Breathing
+                  Box Breathing Online
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/tools/thought-reframer"
+                  className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+                >
+                  CBT Thought Reframer
                 </Link>
               </li>
               <li>
@@ -194,11 +202,11 @@ export function SiteFooter() {
                   <span>+91 96315 26557</span>
                 </a>
                 <a
-                  href="mailto:aadarshsingh121@gmail.com"
+                  href="mailto:support@heyrewire.com"
                   className="inline-flex items-center gap-1.5 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
                 >
                   <Mail className="h-3.5 w-3.5 text-rose-600" />
-                  <span>aadarshsingh121@gmail.com</span>
+                  <span>support@heyrewire.com</span>
                 </a>
               </div>
             </div>

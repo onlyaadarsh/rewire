@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   description:
     "Explore evidence-informed articles on overcoming overthinking, cognitive reframing, managing anxiety, and nervous system regulation with HeyRewire.",
   alternates: {
-    canonical: "/buides",
+    canonical: "/guides",
   },
   openGraph: {
     title: "Mental Health Guides & CBT Resources | HeyRewire",

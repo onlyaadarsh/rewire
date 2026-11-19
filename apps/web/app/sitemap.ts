@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { getWordPressPosts } from "@/lib/wordpress";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://heyrewire.com";
-const LAST_MODIFIED = new Date("2026-10-01T00:00:00.000Z");
+const LAST_MODIFIED = new Date();
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -16,6 +16,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${BASE_URL}/guides`,
       lastModified: LAST_MODIFIED,
       changeFrequency: "daily",
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/tools/box-breathing`,
+      lastModified: LAST_MODIFIED,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/tools/thought-reframer`,
+      lastModified: LAST_MODIFIED,
+      changeFrequency: "weekly",
       priority: 0.9,
     },
     {
@@ -84,7 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const posts = await getWordPressPosts({ perPage: 100 });
     const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({
-      url: `${BASE_URL}/blog/${post.slug}`,
+      url: `${BASE_URL}/guides/${post.slug}`,
       lastModified: new Date(post.modified || post.date),
       changeFrequency: "weekly" as const,
       priority: 0.8,
