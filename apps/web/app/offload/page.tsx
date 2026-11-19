@@ -38,22 +38,21 @@ export default function OffloadPage() {
           {/* Top Row on Mobile: Logo & Quick Actions */}
           <div className="flex items-center justify-between w-full md:w-auto">
             <div className="flex items-center gap-2 sm:gap-3">
-
-              <div className="hidden sm:block h-4 w-[1px] bg-zinc-200 dark:bg-zinc-800" />
-
-              <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-sm shadow-teal-500/20 cursor-pointer">
-                  <Link href="/">
-                    <Brain className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  </Link>
+              <Link href="/">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-sm shadow-teal-500/20 cursor-pointer">
+                    <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </div>
+                  <div className="hidden sm:flex flex-col">
+                    <span className="hidden sm:inline text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-50 cursor-pointer">
+                      Rewire
+                    </span>
+                    <span className="hidden sm:inline-flex py-0.5 text-[10px] font-semibold text-teal-700 dark:text-teal-300">
+                      Mental Offloading
+                    </span>
+                  </div>
                 </div>
-                <span className="hidden sm:inline text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                  Rewire
-                </span>
-                <span className="hidden sm:inline-flex rounded-full bg-teal-50 px-2 py-0.5 text-[10px] font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-300">
-                  Mental Offloading
-                </span>
-              </div>
+              </Link>
             </div>
 
             {/* Right Quick Actions (visible on mobile top bar) */}
@@ -122,38 +121,32 @@ export default function OffloadPage() {
               <span>Breathe</span>
             </button>
 
-            <button
-              onClick={() => setIsCrisisModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-900/80 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300 transition-colors"
-            >
-              <PhoneCall className="h-3.5 w-3.5" />
-              <span>988 Lifeline</span>
-            </button>
-
             {session?.user && <UserButton />}
           </div>
         </div>
-      </header>
+      </header >
 
       {/* Floating Breathing Widget Drawer when opened */}
-      {showBreathing && (
-        <div className="border-b border-teal-200/80 bg-teal-50/50 p-6 backdrop-blur dark:border-teal-900/60 dark:bg-teal-950/30">
-          <div className="mx-auto max-w-sm flex flex-col items-center">
-            <div className="flex items-center justify-between w-full mb-3">
-              <span className="text-xs font-bold text-teal-900 dark:text-teal-200">
-                Grounding Box Breathing
-              </span>
-              <button
-                onClick={() => setShowBreathing(false)}
-                className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-              >
-                Hide
-              </button>
+      {
+        showBreathing && (
+          <div className="border-b border-teal-200/80 bg-teal-50/50 p-6 backdrop-blur dark:border-teal-900/60 dark:bg-teal-950/30">
+            <div className="mx-auto max-w-sm flex flex-col items-center">
+              <div className="flex items-center justify-between w-full mb-3">
+                <span className="text-xs font-bold text-teal-900 dark:text-teal-200">
+                  Grounding Box Breathing
+                </span>
+                <button
+                  onClick={() => setShowBreathing(false)}
+                  className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                >
+                  Hide
+                </button>
+              </div>
+              <BreathingWidget />
             </div>
-            <BreathingWidget />
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Main Content Area */}
       <main className="flex-1 py-8 px-4 sm:px-6">
@@ -197,6 +190,6 @@ export default function OffloadPage() {
           <strong>Clinical Note:</strong> Brain dumping and cognitive reframing are evidence-informed grounding techniques to interrupt overthinking and relieve acute overwhelm. Rewire is an AI companion and does not provide clinical diagnosis or emergency medical care.
         </p>
       </footer>
-    </div>
+    </div >
   );
 }

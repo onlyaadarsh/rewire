@@ -13,4 +13,5 @@ export {
   type ConversationMessage,
   type AiRun,
   type JournalEntry,
+  type ContactMessage,
 } from "@prisma/client";

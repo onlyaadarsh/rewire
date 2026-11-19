@@ -20,23 +20,22 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: "HeyRewire — Break Overthinking Spirals, Relieve Stress & Track Mood",
+    default: "Stop Overthinking & Calm Racing Thoughts | HeyRewire",
     template: "%s | HeyRewire",
   },
   description:
-    "Overcome overthinking, navigate depression, and calm stress with HeyRewire. Grounded in CBT techniques, featuring an empathetic AI chat companion, private brain dump journaling, and longitudinal mood analytics.",
+  "Quiet racing thoughts, untangle anxiety, and reframe worries with CBT-informed journaling, interactive box breathing, and a private reflection companion.",
   keywords: [
-    "heyrewire",
     "stop overthinking",
     "how to stop overthinking at night",
-    "anxiety grounding exercises",
-    "CBT thought reframing",
+    "calm racing thoughts",
+    "cbt thought record",
     "brain dump journal",
-    "cognitive offloading",
+    "box breathing online",
+    "cognitive reframing exercises",
+    "anxiety grounding exercises",
     "depression mood tracker",
     "AI mental health companion",
-    "box breathing technique",
-    "stress relief exercises",
     "emotional regulation tool",
   ],
   authors: [{ name: "HeyRewire Mental Health Team", url: APP_URL }],
@@ -63,9 +62,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: APP_URL,
     siteName: "HeyRewire",
-    title: "HeyRewire — AI Mental Health Companion for Overthinking & Stress",
+    title: "Stop Overthinking & Calm Racing Thoughts | HeyRewire",
     description:
-      "Grounded in CBT techniques to break rumination loops, calm racing thoughts, and track emotional wellness over time.",
+    "Break rumination spirals with CBT-informed journaling, interactive box breathing, and an empathetic private companion.",
     images: [
       {
         url: "/opengraph-image",
@@ -78,7 +77,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HeyRewire — Break Overthinking Spirals & Calm Stress",
+    title: "Stop Overthinking & Calm Racing Thoughts | HeyRewire",
     description:
       "Interactive mental health companion with CBT-grounded journaling, guided breathing, and mood analytics.",
     images: ["/twitter-image"],
@@ -134,48 +133,9 @@ const globalStructuredData = {
       "contactPoint": [
         {
           "@type": "ContactPoint",
-          "telephone": "+91 96315 26557",
-          "email": "aadarshsingh121@gmail.com",
+          "email": "support@heyrewire.com",
           "contactType": "Customer Support & Inquiries",
           "availableLanguage": ["English", "Hindi"],
-        },
-      ],
-    },
-    {
-      "@type": "FAQPage",
-      "@id": `${APP_URL}/#faq`,
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is HeyRewire?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "HeyRewire is an evidence-informed AI mental health companion designed to help break overthinking loops, regulate nervous system stress, and reframe irrational worries through Cognitive Behavioral Therapy (CBT) techniques and brain dump journaling.",
-          },
-        },
-        {
-          "@type": "Question",
-          "name": "How does Cognitive Offloading (Brain Dump) work?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "When your mind is overwhelmed, working memory gets strained. Brain dumping allows you to externalize racing thoughts onto a private digital canvas, isolate cognitive distortions (such as catastrophizing or all-or-nothing thinking), and convert emotional heaviness into actionable micro-steps.",
-          },
-        },
-        {
-          "@type": "Question",
-          "name": "Is HeyRewire a replacement for therapy or a licensed doctor?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. HeyRewire is a self-care wellness companion and cognitive reframing habit tool. It does not provide medical diagnoses, psychiatric prescriptions, or emergency intervention. If you are experiencing acute crisis or thoughts of self-harm, please dial 14416 (India), 988 (US & Canada), 111 (UK), or your local emergency hotline.",
-          },
-        },
-        {
-          "@type": "Question",
-          "name": "Is my journal and mental health data private?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. HeyRewire adheres to a zero data selling principle with encrypted sessions and database isolation. Your private reflections and brain dumps remain strictly yours.",
-          },
         },
       ],
     },
