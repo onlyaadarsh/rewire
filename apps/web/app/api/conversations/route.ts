@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@rewire/database";
+import { checkRateLimit } from "@/lib/rate-limiter";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,30 @@ export async function POST(request: NextRequest) {
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Rate limit conversation creation (max 10 new conversations per minute per user)
+  const rateCheck = await checkRateLimit({
+    key: `ratelimit:conversation:create:${session.user.id}`,
+    limit: 10,
+    windowSeconds: 60,
+  });
+
+  if (!rateCheck.success) {
+    return NextResponse.json(
+      {
+        error: `Too many conversations created. Please wait ${rateCheck.retryAfter} seconds.`,
+        retryAfter: rateCheck.retryAfter,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateCheck.retryAfter),
+          "X-RateLimit-Limit": String(rateCheck.limit),
+          "X-RateLimit-Remaining": "0",
+        },
+      }
+    );
   }
 
   // Check if user already has an empty conversation (no messages yet)

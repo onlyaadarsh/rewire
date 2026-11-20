@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@rewire/database";
 import { enqueueAiJob } from "@/lib/queue";
 import { SendMessageBodySchema } from "@rewire/validation";
-import { checkRateLimit } from "@/lib/rate-limiter";
+import { checkRateLimits } from "@/lib/rate-limiter";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +43,37 @@ export async function POST(
     );
   }
 
+  // 2.5. Enforce AI rate limiting atomically BEFORE hitting database (Burst: 5 req/min, Quota: 30 req/hr)
+  const rateLimitResult = await checkRateLimits([
+    {
+      key: `ratelimit:ai:burst:${session.user.id}`,
+      limit: 5,
+      windowSeconds: 60,
+    },
+    {
+      key: `ratelimit:ai:hourly:${session.user.id}`,
+      limit: 30,
+      windowSeconds: 3600,
+    },
+  ]);
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      {
+        error: `AI request rate limit reached. Please wait ${rateLimitResult.retryAfter} seconds before sending another message.`,
+        retryAfter: rateLimitResult.retryAfter,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimitResult.retryAfter),
+          "X-RateLimit-Limit": String(rateLimitResult.limit),
+          "X-RateLimit-Remaining": "0",
+        },
+      }
+    );
+  }
+
   // 3. Verify conversation ownership
   const conversation = await db.conversation.findUnique({
     where: { id: conversationId },
@@ -56,53 +87,6 @@ export async function POST(
     return NextResponse.json(
       { error: "Forbidden: You do not own this conversation" },
       { status: 403 }
-    );
-  }
-
-  // 3.5. Enforce AI rate limiting (Burst: 5 req/min, Quota: 30 req/hr)
-  const burstCheck = await checkRateLimit({
-    key: `ratelimit:ai:burst:${session.user.id}`,
-    limit: 5,
-    windowSeconds: 60,
-  });
-
-  if (!burstCheck.success) {
-    return NextResponse.json(
-      {
-        error: `Too many AI requests. Please wait ${burstCheck.retryAfter} seconds before sending another message.`,
-        retryAfter: burstCheck.retryAfter,
-      },
-      {
-        status: 429,
-        headers: {
-          "Retry-After": String(burstCheck.retryAfter),
-          "X-RateLimit-Limit": String(burstCheck.limit),
-          "X-RateLimit-Remaining": "0",
-        },
-      }
-    );
-  }
-
-  const hourlyCheck = await checkRateLimit({
-    key: `ratelimit:ai:hourly:${session.user.id}`,
-    limit: 30,
-    windowSeconds: 3600,
-  });
-
-  if (!hourlyCheck.success) {
-    return NextResponse.json(
-      {
-        error: "Hourly AI request limit reached. Please wait before asking more questions.",
-        retryAfter: hourlyCheck.retryAfter,
-      },
-      {
-        status: 429,
-        headers: {
-          "Retry-After": String(hourlyCheck.retryAfter),
-          "X-RateLimit-Limit": String(hourlyCheck.limit),
-          "X-RateLimit-Remaining": "0",
-        },
-      }
     );
   }
 

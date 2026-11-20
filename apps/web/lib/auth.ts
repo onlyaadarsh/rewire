@@ -72,12 +72,22 @@ export const auth = betterAuth({
     },
     increment: async (key: string, ttl: number) => {
       try {
-        const val = await redis.incr(key);
-        if (val === 1 && ttl) {
-          await redis.expire(key, ttl);
-        }
-        return val;
-      } catch {
+        // Atomic increment and TTL assignment via Lua script to prevent key leakage with no TTL (-1)
+        const res = await redis.eval(
+          `
+          local current = redis.call('INCR', KEYS[1])
+          if current == 1 and tonumber(ARGV[1]) > 0 then
+            redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1]))
+          end
+          return current
+          `,
+          1,
+          key,
+          ttl || 0
+        );
+        return Number(res);
+      } catch (err) {
+        console.warn("[BetterAuth] Redis increment error:", err);
         return 1;
       }
     },
@@ -100,7 +110,12 @@ export const auth = betterAuth({
   },
   advanced: {
     ipAddress: {
-      ipAddressHeaders: ["x-forwarded-for", "x-real-ip"],
+      ipAddressHeaders: [
+        "cf-connecting-ip",
+        "x-real-ip",
+        "x-vercel-forwarded-for",
+        "x-forwarded-for",
+      ],
       disableIpTracking: false,
     },
   },

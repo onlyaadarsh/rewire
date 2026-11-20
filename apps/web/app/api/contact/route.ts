@@ -1,58 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ContactFormSchema } from "@rewire/validation";
 import { db } from "@rewire/database";
-import { redis } from "@/lib/redis";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limiter";
 
 export const dynamic = "force-dynamic";
 
-// Basic in-memory rate-limiter fallback if Redis is not configured
-const ipSubmissionTimestamps = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
-const MAX_REQUESTS_PER_WINDOW = 5;
-
-function isRateLimitedMemory(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = ipSubmissionTimestamps.get(ip) || [];
-  const validTimestamps = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-
-  if (validTimestamps.length >= MAX_REQUESTS_PER_WINDOW) {
-    return true;
-  }
-
-  validTimestamps.push(now);
-  ipSubmissionTimestamps.set(ip, validTimestamps);
-  return false;
-}
-
-async function checkRateLimit(ip: string): Promise<boolean> {
-  const redisKey = `ratelimit:contact:${ip}`;
-  try {
-    const current = await redis.incr(redisKey);
-    if (current === 1) {
-      await redis.expire(redisKey, 600); // 10 minutes
-    }
-    return current > MAX_REQUESTS_PER_WINDOW;
-  } catch {
-    // Fall back to in-memory check if Redis is unreachable
-    return isRateLimitedMemory(ip);
-  }
-}
+const CONTACT_RATE_LIMIT = 5;
+const CONTACT_WINDOW_SECONDS = 600; // 10 minutes
 
 export async function POST(request: NextRequest) {
   try {
-    const clientIp =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip") ||
-      "anonymous";
+    const clientIp = getClientIp(request);
 
-    // Rate-limiting check
-    const isLimited = await checkRateLimit(clientIp);
-    if (isLimited) {
+    // Rate-limiting check (atomic sliding window via Redis with in-memory fallback)
+    const rateCheck = await checkRateLimit({
+      key: `ratelimit:contact:${clientIp}`,
+      limit: CONTACT_RATE_LIMIT,
+      windowSeconds: CONTACT_WINDOW_SECONDS,
+    });
+
+    if (!rateCheck.success) {
       return NextResponse.json(
         {
-          error: "Too many messages sent. Please wait a few minutes before trying again.",
+          error: `Too many messages sent. Please wait ${rateCheck.retryAfter} seconds before trying again.`,
+          retryAfter: rateCheck.retryAfter,
         },
-        { status: 429 }
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateCheck.retryAfter),
+            "X-RateLimit-Limit": String(rateCheck.limit),
+            "X-RateLimit-Remaining": "0",
+          },
+        }
       );
     }
 

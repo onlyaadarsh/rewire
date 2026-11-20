@@ -1,32 +1,25 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, baseProcedure } from "../init";
+import { createTRPCRouter, protectedProcedure } from "../init";
 import { enqueueAiJob } from "@/lib/queue";
-import { checkRateLimit } from "@/lib/rate-limiter";
+import { checkRateLimits } from "@/lib/rate-limiter";
 
 export const conversationRouter = createTRPCRouter({
-  list: baseProcedure
-    .input(z.object({ userId: z.string().optional() }))
-    .query(async ({ ctx, input }) => {
-      const targetUserId = input.userId || ctx.user?.id;
-      if (!targetUserId) {
-        return [];
-      }
-
-      const conversations = await ctx.db.conversation.findMany({
-        where: { userId: targetUserId },
-        orderBy: { updatedAt: "desc" },
-        include: {
-          messages: {
-            orderBy: { createdAt: "desc" },
-            take: 1,
-          },
+  list: protectedProcedure.query(async ({ ctx }) => {
+    const conversations = await ctx.db.conversation.findMany({
+      where: { userId: ctx.user.id },
+      orderBy: { updatedAt: "desc" },
+      include: {
+        messages: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
         },
-      });
-      return conversations;
-    }),
+      },
+    });
+    return conversations;
+  }),
 
-  byId: baseProcedure
+  byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const conversation = await ctx.db.conversation.findUnique({
@@ -41,113 +34,111 @@ export const conversationRouter = createTRPCRouter({
           },
         },
       });
-      return conversation;
-    }),
 
-  create: baseProcedure
-    .input(z.object({ userId: z.string().optional() }))
-    .mutation(async ({ ctx, input }) => {
-      const targetUserId = input.userId || ctx.user?.id;
-      if (!targetUserId) {
-        throw new Error("UserId is required to create a conversation");
+      if (!conversation || conversation.userId !== ctx.user.id) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found",
+        });
       }
 
-      const conversation = await ctx.db.conversation.create({
-        data: { userId: targetUserId },
-      });
       return conversation;
     }),
 
-  sendMessage: baseProcedure
+  create: protectedProcedure.mutation(async ({ ctx }) => {
+    const conversation = await ctx.db.conversation.create({
+      data: { userId: ctx.user.id },
+    });
+    return conversation;
+  }),
+
+  sendMessage: protectedProcedure
     .input(
       z.object({
         conversationId: z.string(),
-        role: z.enum(["user", "assistant"]).default("user"),
+        role: z.literal("user").default("user"),
         content: z.string().min(1).max(10000),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // 1. If user message, enforce rate limiting before writing message or enqueuing job
-      let userId = ctx.user?.id;
-      if (input.role === "user") {
-        if (!userId) {
-          const conv = await ctx.db.conversation.findUnique({
-            where: { id: input.conversationId },
-            select: { userId: true },
-          });
-          userId = conv?.userId;
-        }
+      const userId = ctx.user.id;
 
-        if (userId) {
-          const burstCheck = await checkRateLimit({
-            key: `ratelimit:ai:burst:${userId}`,
-            limit: 5,
-            windowSeconds: 60,
-          });
-          if (!burstCheck.success) {
-            throw new TRPCError({
-              code: "TOO_MANY_REQUESTS",
-              message: `Too many AI requests. Please wait ${burstCheck.retryAfter} seconds before sending another message.`,
-            });
-          }
+      // 1. Enforce AI rate limiting atomically BEFORE touching PostgreSQL (Burst: 5 req/min, Quota: 30 req/hr)
+      const rateLimitResult = await checkRateLimits([
+        {
+          key: `ratelimit:ai:burst:${userId}`,
+          limit: 5,
+          windowSeconds: 60,
+        },
+        {
+          key: `ratelimit:ai:hourly:${userId}`,
+          limit: 30,
+          windowSeconds: 3600,
+        },
+      ]);
 
-          const hourlyCheck = await checkRateLimit({
-            key: `ratelimit:ai:hourly:${userId}`,
-            limit: 30,
-            windowSeconds: 3600,
-          });
-          if (!hourlyCheck.success) {
-            throw new TRPCError({
-              code: "TOO_MANY_REQUESTS",
-              message: "Hourly AI request limit reached. Please wait before asking more questions.",
-            });
-          }
-        }
+      if (!rateLimitResult.success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: `AI rate limit reached. Please wait ${rateLimitResult.retryAfter} seconds before sending another message.`,
+        });
       }
 
-      // 2. Save message to PostgreSQL
+      // 2. Verify conversation existence and ownership
+      const conv = await ctx.db.conversation.findUnique({
+        where: { id: input.conversationId },
+        select: { userId: true },
+      });
+
+      if (!conv) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found",
+        });
+      }
+
+      if (conv.userId !== userId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Forbidden: You do not own this conversation",
+        });
+      }
+
+      // 3. Save message to PostgreSQL
       const message = await ctx.db.conversationMessage.create({
         data: {
           conversationId: input.conversationId,
-          role: input.role,
+          role: "user",
           content: input.content,
         },
       });
 
-      let runId: string | null = null;
+      // 4. Initiate AI run and enqueue SQS job
+      const aiRun = await ctx.db.aiRun.create({
+        data: {
+          conversationId: input.conversationId,
+          triggeringMessageId: message.id,
+          status: "queued",
+        },
+      });
 
-      // 3. If user message, initiate AI run and enqueue SQS job
-      if (input.role === "user") {
-        const aiRun = await ctx.db.aiRun.create({
-          data: {
-            conversationId: input.conversationId,
-            triggeringMessageId: message.id,
-            status: "queued",
-          },
+      try {
+        await enqueueAiJob({
+          runId: aiRun.id,
+          conversationId: input.conversationId,
+          messageId: message.id,
+          userId,
         });
-        runId = aiRun.id;
-
-        if (userId) {
-          try {
-            await enqueueAiJob({
-              runId: aiRun.id,
-              conversationId: input.conversationId,
-              messageId: message.id,
-              userId,
-            });
-          } catch (err: unknown) {
-            console.error(
-              `[tRPC sendMessage] Error enqueuing AI job for run ${aiRun.id}:`,
-              err
-            );
-          }
-        }
+      } catch (err: unknown) {
+        console.error(
+          `[tRPC sendMessage] Error enqueuing AI job for run ${aiRun.id}:`,
+          err
+        );
       }
 
       return {
         ...message,
-        runId,
+        runId: aiRun.id,
       };
     }),
 });
-
