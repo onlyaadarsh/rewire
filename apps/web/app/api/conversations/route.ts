@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/conversations
  * Create a new conversation for the authenticated user.
+ * Reuses existing empty conversation if one already exists to avoid clutter.
  */
 export async function POST(request: NextRequest) {
   const session = await auth.api.getSession({
@@ -44,9 +45,32 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Check if user already has an empty conversation (no messages yet)
+  const existingEmpty = await db.conversation.findFirst({
+    where: {
+      userId: session.user.id,
+      messages: { none: {} },
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      messages: {
+        take: 1,
+      },
+    },
+  });
+
+  if (existingEmpty) {
+    return NextResponse.json({ conversation: existingEmpty }, { status: 200 });
+  }
+
   const conversation = await db.conversation.create({
     data: {
       userId: session.user.id,
+    },
+    include: {
+      messages: {
+        take: 1,
+      },
     },
   });
 

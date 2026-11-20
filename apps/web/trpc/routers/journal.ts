@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, baseProcedure } from "../init";
+import { createTRPCRouter, baseProcedure, protectedProcedure } from "../init";
 import {
   CreateJournalEntrySchema,
   ReframeJournalEntrySchema,
@@ -12,15 +12,15 @@ export const journalRouter = createTRPCRouter({
 
   /**
    * Run cognitive reframing & mental offload analysis on raw brain dump text.
-   * Can be used by both authenticated and guest users for immediate relief.
+   * Strictly requires an authenticated user session.
    */
-  reframe: baseProcedure
+  reframe: protectedProcedure
     .input(ReframeJournalEntrySchema)
     .mutation(async ({ ctx, input }) => {
       const analysis = await reframeBrainDump(
         input.rawContent,
         input.moodBefore,
-        ctx.user?.id,
+        ctx.user.id,
         input.distressTags,
       );
       return analysis;
@@ -29,13 +29,10 @@ export const journalRouter = createTRPCRouter({
   /**
    * Save a brain dump session into the user's personal journal.
    */
-  create: baseProcedure
+  create: protectedProcedure
     .input(CreateJournalEntrySchema)
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.user?.id;
-      if (!userId) {
-        throw new Error("You must be signed in to save journal entries to your account.");
-      }
+      const userId = ctx.user.id;
 
       const entry = await ctx.db.journalEntry.create({
         data: {
@@ -53,13 +50,10 @@ export const journalRouter = createTRPCRouter({
   /**
    * Update entry post-offload with moodAfter, actionTaken, and reframingResult.
    */
-  updateAfter: baseProcedure
+  updateAfter: protectedProcedure
     .input(UpdatePostOffloadSchema)
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.user?.id;
-      if (!userId) {
-        throw new Error("Unauthorized");
-      }
+      const userId = ctx.user.id;
 
       // Ensure ownership
       const existing = await ctx.db.journalEntry.findUnique({
@@ -110,13 +104,10 @@ export const journalRouter = createTRPCRouter({
   /**
    * List user's journal entries in reverse chronological order.
    */
-  list: baseProcedure
+  list: protectedProcedure
     .input(z.object({ limit: z.number().min(1).max(50).default(20) }).optional())
     .query(async ({ ctx, input }) => {
-      const userId = ctx.user?.id;
-      if (!userId) {
-        return [];
-      }
+      const userId = ctx.user.id;
 
       const limit = input?.limit ?? 20;
 
@@ -144,13 +135,10 @@ export const journalRouter = createTRPCRouter({
   /**
    * Get single entry by ID.
    */
-  byId: baseProcedure
+  byId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const userId = ctx.user?.id;
-      if (!userId) {
-        throw new Error("Unauthorized");
-      }
+      const userId = ctx.user.id;
 
       const entry = await ctx.db.journalEntry.findUnique({
         where: { id: input.id },
@@ -169,13 +157,10 @@ export const journalRouter = createTRPCRouter({
   /**
    * Delete an entry.
    */
-  delete: baseProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.user?.id;
-      if (!userId) {
-        throw new Error("Unauthorized");
-      }
+      const userId = ctx.user.id;
 
       const existing = await ctx.db.journalEntry.findUnique({
         where: { id: input.id },

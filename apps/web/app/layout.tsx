@@ -20,23 +20,22 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: "HeyRewire — Break Overthinking Spirals, Relieve Stress & Track Mood",
-    template: "%s | HeyRewire Mental Health Companion",
+    default: "Stop Overthinking & Calm Racing Thoughts | HeyRewire",
+    template: "%s | HeyRewire",
   },
   description:
-    "Overcome overthinking, navigate depression, and calm stress with HeyRewire. Grounded in CBT techniques, featuring an empathetic AI chat companion, private brain dump journaling, and longitudinal mood analytics.",
+  "Quiet racing thoughts, untangle anxiety, and reframe worries with CBT-informed journaling, interactive box breathing, and a private reflection companion.",
   keywords: [
-    "heyrewire",
     "stop overthinking",
     "how to stop overthinking at night",
-    "anxiety grounding exercises",
-    "CBT thought reframing",
+    "calm racing thoughts",
+    "cbt thought record",
     "brain dump journal",
+    "box breathing online",
+    "cognitive reframing exercises",
+    "anxiety grounding exercises",
     "depression mood tracker",
     "AI mental health companion",
-    "box breathing technique",
-    "stress relief exercises",
-    "tele-manas online self-care",
     "emotional regulation tool",
   ],
   authors: [{ name: "HeyRewire Mental Health Team", url: APP_URL }],
@@ -48,7 +47,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: "./",
+    canonical: "/",
   },
   icons: {
     icon: [
@@ -63,24 +62,25 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: APP_URL,
     siteName: "HeyRewire",
-    title: "HeyRewire — AI Mental Health Companion for Overthinking & Stress",
+    title: "Stop Overthinking & Calm Racing Thoughts | HeyRewire",
     description:
-      "Grounded in CBT techniques to break rumination loops, calm racing thoughts, and track emotional wellness over time.",
+    "Break rumination spirals with CBT-informed journaling, interactive box breathing, and an empathetic private companion.",
     images: [
       {
-        url: "/web-app-manifest-512x512.png",
-        width: 512,
-        height: 512,
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
         alt: "HeyRewire - Mental Health Companion",
+        type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HeyRewire — Break Overthinking Spirals & Calm Stress",
+    title: "Stop Overthinking & Calm Racing Thoughts | HeyRewire",
     description:
       "Interactive mental health companion with CBT-grounded journaling, guided breathing, and mood analytics.",
-    images: ["/web-app-manifest-512x512.png"],
+    images: ["/twitter-image"],
   },
   robots: {
     index: true,
@@ -123,24 +123,19 @@ const globalStructuredData = {
       },
     },
     {
-      "@type": "MedicalOrganization",
+      "@type": "Organization",
       "@id": `${APP_URL}/#org`,
       "name": "HeyRewire Mental Wellness",
       "url": APP_URL,
+      "logo": `${APP_URL}/icon.png`,
       "description":
         "Provider of accessible, evidence-informed digital tools for cognitive reframing, emotional regulation, and stress management.",
       "contactPoint": [
         {
           "@type": "ContactPoint",
-          "telephone": "14416",
-          "contactType": "Emergency Tele-MANAS Crisis Support (India)",
+          "email": "support@heyrewire.com",
+          "contactType": "Customer Support & Inquiries",
           "availableLanguage": ["English", "Hindi"],
-        },
-        {
-          "@type": "ContactPoint",
-          "telephone": "988",
-          "contactType": "Emergency Crisis Lifeline Support (US & Canada)",
-          "availableLanguage": ["English", "Spanish"],
         },
       ],
     },

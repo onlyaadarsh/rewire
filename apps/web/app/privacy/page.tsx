@@ -14,14 +14,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Confidential Mental Health Data Standards",
+  title: "Privacy Policy",
   description:
     "Review Rewire's privacy policy. We adhere to strict zero-data-selling principles, end-to-end transport encryption, and user-governed mental health data retention.",
   alternates: {
     canonical: "/privacy",
   },
   openGraph: {
-    title: "Privacy Policy — Rewire Mental Health",
+    title: "Privacy Policy | HeyRewire",
     description:
       "Your vulnerability deserves protection. How Rewire securely protects and isolates your personal thoughts and journal entries.",
   },
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
       <JsonLd data={privacyJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-12 md:py-20 px-6">
+      <main className="flex-1 py-10 md:py-20 px-4 sm:px-6">
         <article className="mx-auto max-w-4xl space-y-12">
           {/* Header */}
           <header className="space-y-4 text-center">
@@ -161,14 +161,31 @@ export default function PrivacyPage() {
 
             <div className="space-y-3">
               <h2 className="text-lg md:text-xl font-bold text-zinc-900 dark:text-zinc-100">
-                4. Contact Our Privacy Officer
+                4. Data Controller & Privacy Inquiries
               </h2>
               <p>
-                If you have questions regarding our data practices, encryption mechanisms, or wish to request complete data extraction, contact us at:
+                The data controller responsible for the processing of personal data on Rewire is <strong>Aadarsh Kumar</strong> (Operating Rewire, India).
               </p>
-              <p className="font-semibold text-zinc-800 dark:text-zinc-200">
-                privacy@heyrewire.com
+              <p>
+                If you have questions regarding our data practices, encryption mechanisms, or wish to request complete data extraction or account erasure, contact us directly:
               </p>
+              <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-950/60 space-y-1.5 text-xs md:text-sm">
+                <p>
+                  <strong>Data Controller / Legal Entity:</strong> Aadarsh Kumar
+                </p>
+                <p>
+                  <strong>Official Email ID:</strong>{" "}
+                  <a href="mailto:aadarshsingh121@gmail.com" className="font-semibold text-teal-600 dark:text-teal-400 underline">
+                    aadarshsingh121@gmail.com
+                  </a>
+                </p>
+                <p>
+                  <strong>Contact Mobile:</strong>{" "}
+                  <a href="tel:+919631526557" className="font-semibold text-teal-600 dark:text-teal-400 underline">
+                    +91 96315 26557
+                  </a>
+                </p>
+              </div>
             </div>
           </section>
         </article>

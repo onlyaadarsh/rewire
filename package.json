@@ -23,9 +23,16 @@
     "vercel:env:push:preview": "node scripts/vercel-env-sync.mjs --env=preview",
     "vercel:env:pull:prod": "vercel env pull apps/web/.env.production.local --environment=production --yes",
     "vercel:env:pull:preview": "vercel env pull apps/web/.env.preview.local --environment=preview --yes",
-    "vercel:env:ls": "vercel env ls"
+    "vercel:env:ls": "vercel env ls",
+    "db:generate": "pnpm --filter @rewire/database db:generate",
+    "db:push": "pnpm --filter @rewire/database db:push",
+    "db:push:prod": "pnpm --filter @rewire/database db:push:prod",
+    "db:migrate": "pnpm --filter @rewire/database db:migrate",
+    "db:studio": "pnpm --filter @rewire/database db:studio",
+    "db:studio:prod": "pnpm --filter @rewire/database db:studio:prod",
+    "db:build": "pnpm --filter @rewire/database build",
+    "db:studio:dev": "prisma studio --schema packages/database/prisma/dev.db.schema.prisma"
   },
-
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
     "turbo": "latest"

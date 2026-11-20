@@ -118,12 +118,12 @@ export function OffloadHistory({ onClose }: OffloadHistoryProps) {
                       )}
                     </div>
 
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                        <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate">
                           {entry.title || "Brain Dump"}
                         </span>
-                        <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                        <span className="text-[10px] text-zinc-400 dark:text-zinc-500 shrink-0">
                           • {dateStr}
                         </span>
                       </div>

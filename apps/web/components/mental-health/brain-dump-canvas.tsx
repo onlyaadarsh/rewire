@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "@/lib/auth-client";
@@ -19,6 +20,8 @@ import {
   BookOpen,
   HelpCircle,
   Lightbulb,
+  Lock,
+  X,
 } from "lucide-react";
 import { ReframingAnalysis } from "@rewire/types";
 import { ReleaseAnimation } from "./release-animation";
@@ -60,6 +63,21 @@ export function BrainDumpCanvas() {
   const [viewState, setViewState] = useState<"dumping" | "releasing" | "reframed" | "released-done">("dumping");
   const [reframingResult, setReframingResult] = useState<ReframingAnalysis | null>(null);
   const [postReleaseMood, setPostReleaseMood] = useState<number>(4);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+  const [reframeError, setReframeError] = useState<string | null>(null);
+
+  // Restore draft brain dump if user just signed in and came back
+  useEffect(() => {
+    try {
+      const savedDraft = sessionStorage.getItem("rewire_draft_dump");
+      if (savedDraft && savedDraft.trim() && !content) {
+        setContent(savedDraft);
+        sessionStorage.removeItem("rewire_draft_dump");
+      }
+    } catch {
+      // Ignore storage errors in restricted contexts
+    }
+  }, []);
 
   // tRPC mutations with React Query v5
   const reframeMutation = useMutation(trpc.journal.reframe.mutationOptions());
@@ -98,19 +116,28 @@ export function BrainDumpCanvas() {
   // Trigger Cognitive Reframing
   const handleStartReframing = async () => {
     if (!content.trim()) return;
+    setReframeError(null);
+
+    // AI Cognitive Reframing strictly requires an active user session
+    if (!session?.user) {
+      try {
+        sessionStorage.setItem("rewire_draft_dump", content);
+      } catch {
+        // Ignore storage errors
+      }
+      setShowAuthModal(true);
+      return;
+    }
 
     try {
-      // 1. If signed in, create initial journal entry
-      let entryId: string | null = null;
-      if (session?.user) {
-        const entry = await createMutation.mutateAsync({
-          rawContent: content,
-          moodBefore,
-          distressTags: selectedTags,
-        });
-        entryId = entry.id;
-        setCreatedEntryId(entry.id);
-      }
+      // 1. Create initial journal entry
+      const entry = await createMutation.mutateAsync({
+        rawContent: content,
+        moodBefore,
+        distressTags: selectedTags,
+      });
+      const entryId = entry.id;
+      setCreatedEntryId(entry.id);
 
       // 2. Request AI cognitive restructuring
       const analysis = await reframeMutation.mutateAsync({
@@ -119,19 +146,24 @@ export function BrainDumpCanvas() {
         distressTags: selectedTags,
       });
 
+      if (!analysis) {
+        throw new Error("Unable to analyze thoughts. Please try again.");
+      }
+
       setReframingResult(analysis);
       setViewState("reframed");
 
       // 3. Update entry with analysis
-      if (entryId) {
-        await updateMutation.mutateAsync({
-          id: entryId,
-          actionTaken: "reframed",
-          reframingResult: analysis,
-        });
-      }
+      await updateMutation.mutateAsync({
+        id: entryId,
+        actionTaken: "reframed",
+        reframingResult: analysis,
+      });
     } catch (err: any) {
       console.error("Error during reframing:", err);
+      setReframeError(
+        err?.message || "Failed to analyze thoughts. Please ensure you are logged in and try again."
+      );
     }
   };
 
@@ -202,7 +234,7 @@ export function BrainDumpCanvas() {
       )}
 
       {viewState === "released-done" && (
-        <div className="rounded-3xl border border-emerald-200/80 bg-white p-8 text-center shadow-lg dark:border-emerald-900/50 dark:bg-zinc-900">
+        <div className="rounded-3xl border border-emerald-200/80 bg-white p-5 sm:p-8 text-center shadow-lg dark:border-emerald-900/50 dark:bg-zinc-900">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400">
             <Wind className="h-7 w-7" />
           </div>
@@ -231,10 +263,10 @@ export function BrainDumpCanvas() {
             </div>
           </div>
 
-          <div className="mt-8 flex justify-center gap-3">
+          <div className="mt-8 flex justify-center">
             <button
               onClick={handleSavePostRelease}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-teal-500/20 hover:from-teal-500 hover:to-emerald-500 transition-all"
+              className="inline-flex w-full sm:w-auto min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-teal-500/20 hover:from-teal-500 hover:to-emerald-500 transition-all"
             >
               <span>{session?.user ? "Save To Journal & Finish" : "Finish Session"}</span>
               <ArrowRight className="h-4 w-4" />
@@ -258,7 +290,7 @@ export function BrainDumpCanvas() {
       {viewState === "dumping" && (
         <div className="space-y-6">
           {/* Step 1: Initial Distress Barometer & Mindset */}
-          <div className="rounded-3xl border border-zinc-200/80 bg-white/70 p-5 shadow-sm backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-900/60">
+          <div className="rounded-3xl border border-zinc-200/80 bg-white/70 p-4 sm:p-5 shadow-sm backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-900/60">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">
@@ -269,14 +301,14 @@ export function BrainDumpCanvas() {
                 </h3>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <input
                   type="range"
                   min="1"
                   max="10"
                   value={moodBefore}
                   onChange={(e) => setMoodBefore(parseInt(e.target.value))}
-                  className="h-2 w-36 cursor-pointer appearance-none rounded-lg bg-zinc-200 accent-teal-600 dark:bg-zinc-800"
+                  className="h-2 w-full sm:w-40 cursor-pointer appearance-none rounded-lg bg-zinc-200 accent-teal-600 dark:bg-zinc-800"
                 />
               </div>
             </div>
@@ -305,27 +337,31 @@ export function BrainDumpCanvas() {
           {/* Step 2: The Paper Brain Dump Canvas */}
           <div className="relative overflow-hidden rounded-3xl border border-zinc-300/80 bg-white shadow-md dark:border-zinc-800 dark:bg-zinc-900">
             {/* Top Toolbar */}
-            <div className="flex items-center justify-between border-b border-zinc-200/80 bg-zinc-50/70 px-5 py-3 dark:border-zinc-800 dark:bg-zinc-950/50">
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-rose-400" />
-                <div className="h-3 w-3 rounded-full bg-amber-400" />
-                <div className="h-3 w-3 rounded-full bg-emerald-400" />
-                <span className="ml-2 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
-                  Uninhibited Brain Dump (Lined Paper)
+            <div className="flex items-center justify-between border-b border-zinc-200/80 bg-zinc-50/70 px-3.5 sm:px-5 py-2.5 sm:py-3 dark:border-zinc-800 dark:bg-zinc-950/50">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center gap-1 shrink-0">
+                  <div className="h-2.5 w-2.5 rounded-full bg-rose-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                </div>
+                <span className="ml-1 sm:ml-2 text-xs font-semibold text-zinc-600 dark:text-zinc-300 truncate">
+                  <span className="hidden sm:inline">Uninhibited Brain Dump (Lined Paper)</span>
+                  <span className="sm:hidden">Brain Dump Canvas</span>
                 </span>
               </div>
 
               {/* Timer Controls */}
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-mono font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
+              <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                <div className="flex items-center gap-1 sm:gap-1.5 rounded-lg border border-zinc-200 bg-white px-2 sm:px-2.5 py-1 text-xs font-mono font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
                   <Clock className="h-3 w-3 text-teal-600 dark:text-teal-400" />
                   <span>{formatTime(timerSeconds)}</span>
                 </div>
 
                 <button
                   onClick={() => setIsTimerRunning(!isTimerRunning)}
-                  className="rounded-lg p-1 text-zinc-500 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800"
                   title={isTimerRunning ? "Pause Timer" : "Start Sprint Timer"}
+                  aria-label={isTimerRunning ? "Pause Timer" : "Start Sprint Timer"}
                 >
                   {isTimerRunning ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                 </button>
@@ -335,8 +371,9 @@ export function BrainDumpCanvas() {
                     setIsTimerRunning(false);
                     setTimerSeconds(0);
                   }}
-                  className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800"
                   title="Reset Timer"
+                  aria-label="Reset Timer"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                 </button>
@@ -344,15 +381,15 @@ export function BrainDumpCanvas() {
             </div>
 
             {/* Prompt Helper Bar */}
-            <div className="border-b border-zinc-100 bg-amber-50/40 px-5 py-2.5 text-xs text-amber-900 dark:border-zinc-800/60 dark:bg-amber-950/20 dark:text-amber-200 flex items-center gap-2">
+            <div className="border-b border-zinc-100 bg-amber-50/40 px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs text-amber-900 dark:border-zinc-800/60 dark:bg-amber-950/20 dark:text-amber-200 flex items-center gap-2">
               <Lightbulb className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
-              <span className="font-medium truncate">
-                Prompt: "{PROMPTS[Math.floor((timerSeconds / 30) % PROMPTS.length)]}"
+              <span className="font-medium min-w-0 flex-1 truncate text-[11px] sm:text-xs">
+                Prompt: &ldquo;{PROMPTS[Math.floor((timerSeconds / 30) % PROMPTS.length)]}&rdquo;
               </span>
             </div>
 
             {/* Paper Lined Textarea */}
-            <div className="relative p-6">
+            <div className="relative p-4 sm:p-6">
               <textarea
                 value={content}
                 onChange={(e) => {
@@ -363,7 +400,7 @@ export function BrainDumpCanvas() {
                 }}
                 placeholder="Pour everything out here without judging yourself. Write your fears, racing thoughts, endless to-dos, frustration, or catastrophic predictions. Do not edit, fix grammar, or filter. Just dump it all onto paper..."
                 rows={12}
-                className="w-full resize-y bg-transparent font-sans text-sm leading-relaxed text-zinc-900 placeholder:text-zinc-400 focus:outline-none dark:text-zinc-100 dark:placeholder:text-zinc-600"
+                className="w-full resize-y bg-transparent font-sans text-base sm:text-sm leading-relaxed text-zinc-900 placeholder:text-zinc-400 focus:outline-none dark:text-zinc-100 dark:placeholder:text-zinc-600"
                 style={{
                   lineHeight: "2rem",
                   backgroundImage: "linear-gradient(transparent 1.9rem, rgba(200, 200, 200, 0.15) 1.95rem)",
@@ -373,11 +410,11 @@ export function BrainDumpCanvas() {
             </div>
 
             {/* Live Stats Bottom Bar */}
-            <div className="flex flex-wrap items-center justify-between border-t border-zinc-200/80 bg-zinc-50/50 px-5 py-3 text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950/40">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center justify-between border-t border-zinc-200/80 bg-zinc-50/50 px-3.5 sm:px-5 py-2.5 sm:py-3 text-[11px] sm:text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950/40 gap-2">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <span>{wordCount} words poured out</span>
                 <span>&bull;</span>
-                <span className="text-teal-600 dark:text-teal-400 font-medium">
+                <span className="text-teal-600 dark:text-teal-400 font-medium truncate">
                   {content.length > 0 ? "Mental pressure lowering..." : "Ready when you are"}
                 </span>
               </div>
@@ -394,7 +431,7 @@ export function BrainDumpCanvas() {
           </div>
 
           {/* Step 3: Choose Your Coping Pathway */}
-          <div className="rounded-3xl border border-zinc-200/80 bg-white/70 p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/60">
+          <div className="rounded-3xl border border-zinc-200/80 bg-white/70 p-4 sm:p-6 shadow-sm dark:border-zinc-800/80 dark:bg-zinc-900/60">
             <div className="mb-4">
               <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">
                 Step 3 &bull; Choose Your Offload Path
@@ -406,27 +443,47 @@ export function BrainDumpCanvas() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Option A: Cognitive Reframing */}
-              <div className="rounded-2xl border border-teal-200 bg-teal-50/40 p-5 dark:border-teal-900/60 dark:bg-teal-950/20 flex flex-col justify-between">
+              <div className="rounded-2xl border border-teal-200 bg-teal-50/40 p-4 sm:p-5 dark:border-teal-900/60 dark:bg-teal-950/20 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2 text-teal-800 dark:text-teal-300 mb-2">
-                    <Brain className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-                    <h4 className="text-sm font-bold">AI Cognitive Reframing</h4>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2 text-teal-800 dark:text-teal-300">
+                      <Brain className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                      <h4 className="text-sm font-bold">AI Cognitive Reframing</h4>
+                    </div>
+                    {!session?.user && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/80 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                        <Lock className="h-3 w-3" />
+                        <span>Sign In Required</span>
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Transform mental chaos into structured clarity. Identifies what is in your control, unmasks cognitive distortions, and builds a realistic 2-minute next step.
                   </p>
                 </div>
 
+                {reframeError && (
+                  <div className="mt-3 flex items-start gap-2 rounded-xl bg-rose-50 p-3 text-xs text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+                    <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                    <span>{reframeError}</span>
+                  </div>
+                )}
+
                 <button
                   onClick={handleStartReframing}
-                  disabled={!content.trim() || reframeMutation.isPending}
-                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-teal-500/20 hover:from-teal-500 hover:to-emerald-500 disabled:opacity-40 transition-all"
+                  disabled={!content.trim() || reframeMutation.isPending || createMutation.isPending}
+                  className="mt-5 inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-teal-500/20 hover:from-teal-500 hover:to-emerald-500 disabled:opacity-40 transition-all"
                 >
-                  {reframeMutation.isPending ? (
+                  {reframeMutation.isPending || createMutation.isPending ? (
                     <span>Structuring Clarity...</span>
+                  ) : !session?.user ? (
+                    <>
+                      <Lock className="h-3.5 w-3.5" />
+                      <span>Sign In to Analyze &amp; Reframe</span>
+                    </>
                   ) : (
                     <>
-                      <span>Analyze & Reframe My Thoughts</span>
+                      <span>Analyze &amp; Reframe My Thoughts</span>
                       <ArrowRight className="h-4 w-4" />
                     </>
                   )}
@@ -434,7 +491,7 @@ export function BrainDumpCanvas() {
               </div>
 
               {/* Option B: Ritual Release / Let It Go */}
-              <div className="rounded-2xl border border-rose-200 bg-rose-50/40 p-5 dark:border-rose-900/60 dark:bg-rose-950/20 flex flex-col justify-between">
+              <div className="rounded-2xl border border-rose-200 bg-rose-50/40 p-4 sm:p-5 dark:border-rose-900/60 dark:bg-rose-950/20 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300 mb-2">
                     <Flame className="h-5 w-5 text-rose-600 dark:text-rose-400" />
@@ -448,12 +505,72 @@ export function BrainDumpCanvas() {
                 <button
                   onClick={handleStartRelease}
                   disabled={!content.trim()}
-                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-500/20 hover:from-rose-500 hover:to-pink-500 disabled:opacity-40 transition-all"
+                  className="mt-5 inline-flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-500/20 hover:from-rose-500 hover:to-pink-500 disabled:opacity-40 transition-all"
                 >
                   <Wind className="h-4 w-4" />
-                  <span>Dissolve & Release Thoughts</span>
+                  <span>Dissolve &amp; Release Thoughts</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Auth Required Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 text-center space-y-5">
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="absolute top-4 right-4 rounded-full p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+              aria-label="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-teal-600 dark:bg-teal-950/60 dark:text-teal-400">
+              <Brain className="h-7 w-7" />
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+                Sign In for AI Reframing
+              </h3>
+              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                AI Cognitive Reframing parses cognitive distortions, delineates your Circle of Control, and securely saves your reflections to your account.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-3 text-left dark:border-emerald-900/50 dark:bg-emerald-950/30">
+              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+                <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span>Your Brain Dump is safely saved</span>
+              </div>
+              <p className="mt-1 text-[11px] text-emerald-700/90 dark:text-emerald-400/80 leading-relaxed">
+                We preserved your draft ({wordCount} words). Once you sign in, your text will be right here waiting for you.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2.5 pt-2">
+              <Link
+                href="/sign-in?callbackUrl=/offload"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 font-semibold text-xs text-white shadow-md shadow-teal-500/20 hover:from-teal-500 hover:to-emerald-500 transition-all"
+              >
+                <span>Sign In to Continue</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/sign-up?callbackUrl=/offload"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white font-semibold text-xs text-zinc-800 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 transition-all"
+              >
+                <span>Create a Free Account</span>
+              </Link>
+              <button
+                onClick={() => setShowAuthModal(false)}
+                className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 pt-1"
+              >
+                Keep Writing Without Saving
+              </button>
             </div>
           </div>
         </div>

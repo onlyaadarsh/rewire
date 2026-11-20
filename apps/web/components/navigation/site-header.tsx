@@ -22,29 +22,41 @@ export function SiteHeader() {
       />
 
       <header className="sticky top-0 z-40 border-b border-zinc-200/80 bg-white/80 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
-          {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform">
-              <Heart className="h-5 w-5" />
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3 sm:py-3.5">
+          {/* Logo & Brand (Mobile shows just the logo icon; tablet/desktop shows logo + text) */}
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group" aria-label="Rewire Home">
+            <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-500/20 group-hover:scale-105 transition-transform">
+              <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
+            <div className="hidden sm:flex flex-col">
+              <span className="text-base sm:text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight">
                 Rewire
               </span>
-              <span className="text-[10px] font-semibold text-teal-600 dark:text-teal-400 tracking-wide uppercase">
+              <span className="text-[10px] sm:text-[10px] font-semibold text-teal-600 dark:text-teal-400 tracking-wide">
                 Mental Health Companion
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          <nav className="hidden md:flex items-center gap-5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
             <Link
-              href="/about"
+              href="/tools/box-breathing"
               className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
             >
-              About
+              Box Breathing
+            </Link>
+            <Link
+              href="/tools/thought-reframer"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+            >
+              CBT Reframer
+            </Link>
+            <Link
+              href="/guides"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+            >
+              Guides
             </Link>
             <Link
               href="/offload"
@@ -52,32 +64,43 @@ export function SiteHeader() {
             >
               Brain Dump
             </Link>
-            <Link
+            {/* <Link
+              href="/about"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+            >
+              About
+            </Link> */}
+            {/* <Link
               href="/disclaimer"
               className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
             >
               Clinical Disclaimer
-            </Link>
+            </Link> */}
             <Link
               href="/crisis-resources"
               className="hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
             >
               Crisis Directory
             </Link>
+            {/* <Link
+              href="/contact"
+              className="hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+            >
+              Contact
+            </Link> */}
           </nav>
 
           {/* Action CTAs */}
           <div className="flex items-center gap-2.5">
-            {/* Quick 24/7 Crisis Access */}
+            {/* Quick 24/7 Crisis Access (Hidden on mobile header to keep header minimal; available in mobile menu & on desktop) */}
             <button
               onClick={() => setIsCrisisModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/60 transition-colors"
               title={`Immediate crisis help (${regionData.countryName})`}
             >
               <PhoneCall className="h-3.5 w-3.5" />
               <span>{regionData.flag}</span>
-              <span className="hidden sm:inline">Crisis ({regionData.primaryNumber})</span>
-              <span className="sm:hidden">{regionData.primaryNumber}</span>
+              <span>Crisis ({regionData.primaryNumber})</span>
             </button>
 
             {session?.user ? (
@@ -88,7 +111,7 @@ export function SiteHeader() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/offload"
-                  className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 hover:bg-teal-100 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300 transition-colors"
+                  className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-800 hover:bg-teal-700/50 dark:border-teal-900/50 dark:bg-teal-950/40 dark:text-teal-300 transition-colors"
                 >
                   <PenTool className="h-3.5 w-3.5" />
                   <span>Try Brain Dump</span>
@@ -115,7 +138,28 @@ export function SiteHeader() {
 
         {/* Mobile dropdown menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 px-6 py-4 space-y-3">
+          <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 px-4 sm:px-6 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
+            <Link
+              href="/tools/box-breathing"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-teal-700 dark:text-teal-300 hover:text-teal-600"
+            >
+              Box Breathing Online
+            </Link>
+            <Link
+              href="/tools/thought-reframer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-teal-700 dark:text-teal-300 hover:text-teal-600"
+            >
+              CBT Thought Reframer
+            </Link>
+            <Link
+              href="/guides"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
+            >
+              Mental Health Guides
+            </Link>
             <Link
               href="/about"
               onClick={() => setMobileMenuOpen(false)}
@@ -135,15 +179,15 @@ export function SiteHeader() {
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
             >
-              Clinical & Medical Disclaimer
+              Clinical Medical Disclaimer
             </Link>
-            <Link
+            {/* <Link
               href="/crisis-resources"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-rose-600 dark:text-rose-400"
             >
               Crisis Directory (988)
-            </Link>
+            </Link> */}
             <Link
               href="/privacy"
               onClick={() => setMobileMenuOpen(false)}
@@ -152,12 +196,38 @@ export function SiteHeader() {
               Privacy Policy
             </Link>
             <Link
-              href="/terms"
+              href="/legal"
               onClick={() => setMobileMenuOpen(false)}
               className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-teal-600"
             >
-              Terms of Service
+              Legal &amp; Merchant Info
             </Link>
+            <Link
+              href="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm font-medium text-teal-600 dark:text-teal-400 font-semibold"
+            >
+              Contact Us &amp; Support
+            </Link>
+
+            {!session?.user && (
+              <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex gap-2">
+                <Link
+                  href="/sign-in"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 rounded-xl border border-zinc-200 bg-white py-2.5 text-center text-xs font-semibold text-zinc-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/sign-up"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex-1 rounded-xl bg-teal-600 py-2.5 text-center text-xs font-semibold text-white shadow-sm hover:bg-teal-700"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </header>

@@ -20,6 +20,8 @@ import {
   Clock,
   PanelLeftClose,
   PanelLeftOpen,
+  Menu,
+  X,
 } from "lucide-react";
 import { CrisisModal } from "./crisis-modal";
 import { BreathingWidget } from "./breathing-widget";
@@ -85,12 +87,12 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [activeStepText, setActiveStepText] = useState<string | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Responsive default: collapse sidebar on mobile
+  // Responsive default: open sidebar on desktop, collapse on mobile
   useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      setIsSidebarOpen(false);
+    if (typeof window !== "undefined" && window.innerWidth >= 768) {
+      setIsSidebarOpen(true);
     }
   }, []);
 
@@ -101,6 +103,17 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const activeEventSourceRef = useRef<EventSource | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize textarea as user types to prevent scrollbars
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    const nextHeight = Math.min(Math.max(textarea.scrollHeight, 46), 140);
+    textarea.style.height = `${nextHeight}px`;
+    textarea.style.overflowY = textarea.scrollHeight > 140 ? "auto" : "hidden";
+  }, [inputMessage]);
 
   // Auto-scroll
   useEffect(() => {
@@ -202,6 +215,25 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       setIsSidebarOpen(false);
     }
+
+    // If currently on an empty conversation, do not create or duplicate another empty one
+    if (messages.length === 0 && currentConversationId) {
+      textareaRef.current?.focus();
+      return;
+    }
+
+    // Check if an existing conversation in the sidebar list is already empty
+    const existingEmpty = conversations.find(
+      (c) => !c.messages || c.messages.length === 0
+    );
+    if (existingEmpty) {
+      if (currentConversationId !== existingEmpty.id) {
+        handleSelectConversation(existingEmpty.id);
+      }
+      textareaRef.current?.focus();
+      return;
+    }
+
     if (activeEventSourceRef.current) {
       activeEventSourceRef.current.close();
       activeEventSourceRef.current = null;
@@ -215,11 +247,16 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
       if (!res.ok) return;
       const data = await res.json();
       if (data.conversation) {
-        setConversations((prev) => [data.conversation, ...prev]);
+        setConversations((prev) => {
+          const exists = prev.some((c) => c.id === data.conversation.id);
+          if (exists) return prev;
+          return [data.conversation, ...prev];
+        });
         setCurrentConversationId(data.conversation.id);
         loadedConversationIdRef.current = data.conversation.id;
         setMessages([]);
         router.push(`/chat/${data.conversation.id}`);
+        setTimeout(() => textareaRef.current?.focus(), 100);
       }
     } catch (err) {
       console.error("Failed to create conversation:", err);
@@ -488,14 +525,14 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
       {isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
-          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-xs transition-opacity md:hidden"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs transition-opacity md:hidden"
           aria-hidden="true"
         />
       )}
 
       {/* Sidebar: Conversation Sessions */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex h-full flex-col border-r border-zinc-200/80 bg-white/95 backdrop-blur-md transition-all duration-300 ease-in-out dark:border-zinc-800/80 dark:bg-zinc-900/95 md:relative md:z-30 md:bg-white/70 md:dark:bg-zinc-900/60 ${isSidebarOpen
+        className={`fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r border-zinc-200/80 bg-white/95 shadow-2xl backdrop-blur-md transition-all duration-300 ease-in-out dark:border-zinc-800/80 dark:bg-zinc-900/95 md:relative md:z-30 md:shadow-none md:bg-white/70 md:dark:bg-zinc-900/60 ${isSidebarOpen
           ? "w-72 translate-x-0"
           : "-translate-x-full md:translate-x-0 md:w-16"
           }`}
@@ -534,11 +571,12 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
 
                 <button
                   onClick={() => setIsSidebarOpen(false)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition-colors cursor-pointer"
-                  title="Collapse sidebar"
-                  aria-label="Collapse sidebar"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+                  title="Close sidebar"
+                  aria-label="Close sidebar"
                 >
-                  <PanelLeftClose className="h-4 w-4" />
+                  <X className="h-4 w-4 md:hidden" />
+                  <PanelLeftClose className="hidden md:block h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -562,14 +600,14 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
                     <div
                       key={conv.id}
                       onClick={() => handleSelectConversation(conv.id)}
-                      className={`group relative flex cursor-pointer items-start justify-between rounded-xl p-3 text-left transition-all ${isSelected
+                      className={`group relative flex cursor-pointer items-center justify-between rounded-xl p-2.5 sm:p-3 text-left transition-all ${isSelected
                         ? "bg-teal-50/90 text-teal-950 shadow-sm dark:bg-teal-950/40 dark:text-teal-100 border border-teal-200 dark:border-teal-800/50"
                         : "hover:bg-zinc-100/80 text-zinc-700 dark:hover:bg-zinc-800/50 dark:text-zinc-300"
                         }`}
                     >
-                      <div className="flex items-start gap-2.5 overflow-hidden">
+                      <div className="flex items-start gap-2.5 overflow-hidden flex-1 min-w-0 pr-1">
                         <MessageSquare className={`h-4 w-4 shrink-0 mt-0.5 ${isSelected ? "text-teal-600 dark:text-teal-400" : "text-zinc-400"}`} />
-                        <div className="overflow-hidden">
+                        <div className="overflow-hidden flex-1 min-w-0">
                           <p className="truncate text-xs font-medium leading-snug">
                             {preview}
                           </p>
@@ -579,12 +617,15 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
                         </div>
                       </div>
 
+                      {/* Delete Conversation Button: visible on mobile with distinct tap target, reveals on hover on desktop */}
                       <button
+                        type="button"
                         onClick={(e) => handleDeleteConversation(conv.id, e)}
-                        className="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-rose-600 p-1 rounded transition-opacity"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 active:bg-rose-100 active:text-rose-600 dark:hover:bg-rose-950/50 dark:hover:text-rose-400 dark:active:bg-rose-900/60 transition-all opacity-80 hover:opacity-100 md:opacity-0 md:group-hover:opacity-100 cursor-pointer"
                         title="Delete session"
+                        aria-label="Delete session"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   );
@@ -687,45 +728,75 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col h-full overflow-hidden relative">
         {/* Chat Header */}
-        <header className="h-14 shrink-0 border-b border-zinc-200/80 bg-white/70 px-4 md:px-6 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/70 flex items-center justify-between z-10">
-          <div className="flex items-center gap-3">
+        <header className="h-14 shrink-0 border-b border-zinc-200/80 bg-white/80 px-3 sm:px-6 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/80 flex items-center justify-between z-10 gap-2">
+          {/* Left section: Mobile sidebar button OR Desktop Icon + Brand */}
+          <div className="flex items-center gap-2 min-w-0">
+            {/* Mobile-Only: Sidebar popup button & New Chat button */}
+            <div className="flex items-center gap-1.5 md:hidden">
+              <button
+                type="button"
+                onClick={() => setIsSidebarOpen(true)}
+                className="flex items-center gap-2 rounded-xl border border-zinc-200/90 bg-white px-3 py-2 text-xs font-semibold text-zinc-800 shadow-xs hover:bg-zinc-50 active:scale-95 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 transition-all cursor-pointer"
+                title="Open conversations sidebar"
+                aria-label="Open conversations sidebar"
+              >
+                <Menu className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                <span>Chats</span>
+              </button>
 
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-sm shadow-teal-500/20">
-              <Sparkles className="h-4 w-4" />
-              <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-              </span>
+              <button
+                type="button"
+                onClick={handleCreateNewConversation}
+                className="flex h-8 w-8 items-center justify-center rounded-xl border border-teal-200/80 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:border-teal-900/60 dark:bg-teal-950/60 dark:text-teal-300 transition-colors cursor-pointer"
+                title="Start new reflection session"
+                aria-label="Start new reflection session"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
             </div>
-            <div>
-              <h1 className="text-sm font-bold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                <span>Rewire Companion</span>
-                <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-semibold text-teal-800 dark:bg-teal-950/60 dark:text-teal-300">
-                  Active
+
+            {/* Desktop-Only: Icon and Rewire Companion text (Hidden on mobile) */}
+            <div className="hidden md:flex items-center gap-2.5 min-w-0">
+              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-sm shadow-teal-500/20">
+                <Sparkles className="h-4 w-4" />
+                <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
                 </span>
-              </h1>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 hidden sm:block">
-                Empathetic reflection & evidence-informed coping
-              </p>
+              </div>
+
+              <div className="min-w-0">
+                <h1 className="text-sm font-bold text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5 truncate">
+                  <span>Rewire Companion</span>
+                  <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-semibold text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 shrink-0">
+                    Active
+                  </span>
+                </h1>
+                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                  Empathetic reflection &amp; evidence-informed coping
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Right section: Quick Calming Tools */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Quick Toggle for Breathing Widget */}
             <button
               onClick={() => setShowBreathingWidget(!showBreathingWidget)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-2.5 sm:px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-xs hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              title="Box breathing calming exercise"
             >
               <Wind className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
               <span className="hidden sm:inline">Calm Breath</span>
             </button>
 
-            {/* Emergency Crisis Button */}
+            {/* Emergency Crisis Button (hidden on mobile, visible on desktop) */}
             <button
               onClick={() => setIsCrisisModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 shadow-sm hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50 transition-colors"
+              className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 shadow-xs hover:bg-rose-100 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-900/50 transition-colors cursor-pointer"
             >
-              <PhoneCall className="h-3.5 w-3.5" />
+              <PhoneCall className="h-3.5 w-3.5 shrink-0" />
               <span>Need Help? (988)</span>
             </button>
           </div>
@@ -881,6 +952,8 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
               className="relative flex items-center"
             >
               <textarea
+                ref={textareaRef}
+                id="message-input"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyDown={(e) => {
@@ -890,15 +963,20 @@ export function ChatInterface({ initialChatId }: ChatInterfaceProps = {}) {
                   }
                 }}
                 rows={1}
-                placeholder="Share whatever is on your mind... you are safe and heard."
+                placeholder="Share what's on your mind..."
                 disabled={isStreaming}
-                className="w-full resize-none rounded-2xl border border-zinc-300 bg-white px-4 py-3.5 pr-14 text-sm text-zinc-900 shadow-sm transition-all focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                style={{
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                  overflowY: "hidden",
+                }}
+                className="w-full resize-none rounded-2xl border border-zinc-300 bg-white px-4 py-3 sm:py-3.5 pr-14 text-base sm:text-sm text-zinc-900 shadow-sm transition-all focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 leading-normal overflow-hidden no-scrollbar"
               />
 
               <button
                 type="submit"
                 disabled={!inputMessage.trim() || isStreaming}
-                className="absolute right-2.5 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-500/20 transition-all hover:from-teal-500 hover:to-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-500/20 transition-all hover:from-teal-500 hover:to-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                 aria-label="Send reflection"
               >
                 <Send className="h-4 w-4" />

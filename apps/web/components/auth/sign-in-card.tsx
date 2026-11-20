@@ -75,7 +75,7 @@ export function SignInCard() {
 
         <div className="relative">
           {/* Header */}
-          <div className="mb-8 text-center">
+          <div className="mb-6 text-center">
             <div className="mx-auto mb-3.5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-lg shadow-teal-500/25">
               <Heart className="h-6 w-6" />
             </div>

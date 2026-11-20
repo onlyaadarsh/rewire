@@ -10,14 +10,14 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "24/7 Mental Health Crisis Resources & Support Hotlines (India, US, UK & Worldwide)",
+  title: "24/7 Crisis Resources & Helplines (US, India, UK)",
   description:
     "Free, confidential, 24/7 mental health crisis helplines including India's Tele-MANAS (14416), Vandrevala Foundation, US 988, UK NHS 111, and worldwide emergency services.",
   alternates: {
     canonical: "/crisis-resources",
   },
   openGraph: {
-    title: "Crisis Support Directory — HeyRewire",
+    title: "24/7 Crisis Support Directory | HeyRewire",
     description: "Immediate 24/7 support hotlines and crisis intervention resources in India, US, UK, and globally.",
   },
 };
@@ -157,7 +157,7 @@ export default function CrisisResourcesPage() {
       <JsonLd data={crisisJsonLd} />
       <SiteHeader />
 
-      <main className="flex-1 py-12 md:py-20 px-6">
+      <main className="flex-1 py-10 md:py-20 px-4 sm:px-6">
         <article className="mx-auto max-w-4xl space-y-12">
           {/* Header */}
           <header className="space-y-4 text-center">
